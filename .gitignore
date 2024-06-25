@@ -2,6 +2,7 @@
 .DS_Store
 **/.DS_Store
 
+
 data
 /data/temp
 /data/processed
@@ -17,6 +18,7 @@ src/open_datasets/scripts/Mask_adjusted_section_numbers_slater_0.5km_13_June.nc
 *.xlsx
 *.xls
 *.doc
+*.nc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
