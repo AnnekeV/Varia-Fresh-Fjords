@@ -1,6 +1,7 @@
 pathdata = "/Volumes/imau01/rapid/RACMO2.3p2/FGRN055"
 
 pathAnnekeFolderIMAU02 = "/Volumes/imau02/rapid/Anneke/RACMO2.3p2/FGRN055"
+pathIMAU02 = "/Volumes/imau02/rapid/Anneke/"
 pathRACMO_fjords = pathAnnekeFolderIMAU02+"//Downscaling_GR/Monthly/fjords_only/"
 
 

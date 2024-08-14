@@ -77,8 +77,14 @@ def read_RACMO(downscaling_type, time_resolution, years, variable, since_1940 =T
                 ds_precip = xr.open_mfdataset(precipitation_annual, decode_times=False)
                 ds_precip['time'] = pd.to_datetime(decadal_year, format='%Y') +pd.to_timedelta(decadal_year%1*365, unit='d')
                 return ds_precip
-            ds = xr.open_mfdataset(fpath[0])
-            ds = ds.sel(time=slice(str(years[0]), str(years[-1])))
+            try: 
+                ds = xr.open_mfdataset(fpath[0])
+                ds = ds.sel(time=slice(str(years[0]), str(years[-1])))
+
+            except:
+                ds = xr.open_mfdataset(fpath[0], decode_times=False)
+                ds['time'] = pd.to_datetime(ds.time.values + 1958, format='%Y')
+
 
         elif time_resolution == "Monthly":
             print(" it might be hard to process the data for the whole period, please be patient, or choose a lower time resolution or spatial resolution")
