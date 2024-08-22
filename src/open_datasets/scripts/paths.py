@@ -15,7 +15,7 @@ path_frontal_ablation_per_glacier = pathGithubFolder+"data/raw/solid_discharge/K
 
 pathFjordMask = "/Users/annek/Documents/RACMO2.3p2/FGRN055/Downscaling_GR/masks1k.nc"
 pathDataTemp = pathGithubFolder+ "data/temp/"
-
+pathDataProcessed = pathGithubFolder+ "data/processed/"
 
 pathlocal = "/Users/annek/Documents/RACMO2.3p2/FGRN055/"
 pathFigures = pathGithubFolder+ "results/figures/"
