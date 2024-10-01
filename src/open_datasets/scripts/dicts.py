@@ -74,3 +74,5 @@ dictFWcolor_long['Runoff Ice Caps'] = 'plum'
 FW_type = ["Solid", "IceRun", "Tundra", "Precip", "IceCap"]
 dictFWcolor = dict(zip(FW_type, colors))
 dictFWcolor['IceCap'] = 'plum'
+
+
