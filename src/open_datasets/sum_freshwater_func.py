@@ -20,7 +20,7 @@ dict_coords = {}
 dict_vars = {}
 time_resolution = "Annual"
 spatial_resolution = "1k"
-years = ["1958", "2023"]
+years = ["1940", "2024"]
 
 if spatial_resolution == "1k":
     # dsRunoff = dsRunoff.rename({'runoffcorr': 'runoff'})
@@ -700,7 +700,7 @@ col_order_rel = [
 
 
 # make a list of all the names of data variables in dsSectorSum
-period1 = {"start": "1990", "end": "2003"}
+period1 = {"start": "1990", "end": "2004"}
 period2 = {"start": "2005", "end": "2022"}
 
 try:
@@ -760,4 +760,72 @@ data_std_seasonal_period2["Solid Ice Discharge"].values = (
 data_std_seasonal_period2["Solid Ice Discharge"].values = (
     np.squeeze(dfGIS_period2.groupby(dfGIS_period2.index.month).std().values) / 12
 )
-# %%
+# %% MAR 1 KM RUNOFF
+
+import gzip
+import shutil
+
+def convert_months_to_date(data_array, start_date): 
+    '''
+    This function converts the months since a start date to a date. For format dat_array as ds.time, start_date should 'YYYY-MM-DD'
+    '''
+    array_dates = np.empty(len(data_array)).astype('datetime64[ns]')
+    for i in range(len(data_array)):
+        array_dates[i] = pd.to_datetime(start_date) + pd.DateOffset(months=np.floor(data_array[i]), days=((data_array[i]%1)*30))
+    return array_dates
+
+
+def convert_years_to_date(data_array, start_date): 
+    '''
+    This function converts the years since a start date to a date. For format dat_array as ds.time, start_date should 'YYYY-MM-DD'
+    '''
+    array_dates = np.empty(len(data_array)).astype('datetime64[ns]')
+    for i in range(len(data_array)):
+        array_dates[i] = pd.to_datetime(start_date) + pd.DateOffset(years=np.floor(data_array[i]), days=((data_array[i]%1)*365))
+    return array_dates
+
+
+def open_compressed_xarray(file_path):
+    '''
+    Opens a compressed netcdf file with xarray
+    '''
+    # Path to the compressed file
+    compressed_file = file_path
+
+    # Path to the decompressed file
+    decompressed_file = compressed_file.replace('.gz', '')
+
+    # Decompress the file
+    with gzip.open(compressed_file, 'rb') as f_in:
+        with open(decompressed_file, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+    # Open the decompressed file with xarray
+    ds = xr.open_dataset(decompressed_file, engine='netcdf4', decode_times=False)
+    return ds
+
+fpath_adj_sect  = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/adjusted_section_numbers_slater.nc'
+fpath_masks1k = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/masks1k.nc'
+folder_MARRACMO1km = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/raw/liquid/"
+
+# open all files and align time
+ds_masks1k = xr.open_dataset(fpath_masks1k)
+ds_adj_sect = xr.open_dataset(fpath_adj_sect)
+
+ds_run_MAR = open_compressed_xarray(folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz")
+ds_run_MAR['years_since_19400115'] = ds_run_MAR.time
+ds_run_MAR['time'] = convert_months_to_date(ds_run_MAR['years_since_19400115'], '1940-01-15')
+
+# get masks in same xarray coordinate system
+ds_run_MAR_mean = ds_run_MAR.mean(dim=['time'])
+ds_run_MAR_mean['section_numbers_adjusted'] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
+ds_run_MAR_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
+for var in ds_masks1k.data_vars:
+    ds_run_MAR_mean[var] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
+    ds_run_MAR_mean[var].values = ds_masks1k[var].values
+
+
+# calculate runoff for each basin yearly in Gt
+ds_run_MAR_GrIS_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GrIS']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
+ds_run_MAR_GIC_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GIC']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
+
