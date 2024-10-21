@@ -829,3 +829,18 @@ for var in ds_masks1k.data_vars:
 ds_run_MAR_GrIS_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GrIS']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
 ds_run_MAR_GIC_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GIC']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
 
+
+ds_run_RACMO = open_compressed_xarray(folder_MARRACMO1km+ "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz")
+ds_run_RACMO['years_since_19580115'] = ds_run_RACMO.time
+ds_run_RACMO['time'] = convert_years_to_date(ds_run_RACMO['years_since_19580115'], '1958-01-15')
+ds_runoff_RACMO_mean = ds_run_RACMO.sum(dim=['time'])
+ds_runoff_RACMO_mean['section_numbers_adjusted'] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
+ds_runoff_RACMO_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
+
+for var in ds_masks1k.data_vars:
+    ds_runoff_RACMO_mean[var] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
+    ds_runoff_RACMO_mean[var].values = ds_masks1k[var].values
+
+
+ds_run_RACMO_GrIS_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GrIS']==1).groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum()/1e6)
+ds_run_RACMO_GIC_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GIC']==1).groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum()/1e6)
