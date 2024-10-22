@@ -71,14 +71,12 @@ adj_sect_basal = interpolate.griddata(
 ds_Basal["adj_sect"] = xr.DataArray(
     adj_sect_basal, dims=["y", "x"], coords={"y": ds_Basal.y, "x": ds_Basal.x}
 )
-ds_Basal["adj_sect"].plot()
 
 
 # In[7]:
 df_total_melt_per_basin = (
     ds_Basal["totalmelt"].groupby(ds_Basal["adj_sect"]).sum().to_dataframe() / 1e3
 )
-df_total_melt_per_basin.plot(kind="bar")
 
 df_total_melt_per_basin.round(1)
 
@@ -179,3 +177,9 @@ df_fric_monthly_basin = (
 df_Basal_basin_monthly = df_vhd_monthly_basin + df_gf_monthly_basin + df_fric_monthly_basin
 df_Basal_GrIS_monthly = df_Basal_basin_monthly.sum(axis=1)
 df_Basal_GrIS_annual = df_Basal_GrIS_monthly.sum()
+
+# all to data temp
+df_Basal_basin_monthly.to_csv(pathDataTemp + "Basal_melt/Basal_basin_monthly.csv")
+df_Basal_GrIS_monthly.to_csv(pathDataTemp + "Basal_melt/Basal_GrIS_monthly.csv")
+
+# %%
