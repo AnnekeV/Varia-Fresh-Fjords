@@ -14,6 +14,7 @@ path_Mankoff2020Solid_adjusted = pathGithubFolder+ "data/processed/Mankoff2020So
 path_frontal_ablation_per_glacier = pathGithubFolder+"data/raw/solid_discharge/Kochtitzky2023/CCIN13272_20220623_Greenland_frontal_ablation_by_glacier_Kochtitzky_et_al_v2.csv"  # Kochtitzky2023
 
 pathFjordMask = "/Users/annek/Documents/RACMO2.3p2/FGRN055/Downscaling_GR/masks1k.nc"
+pathDataGithub = pathGithubFolder+ "data/"
 pathDataTemp = pathGithubFolder+ "data/temp/"
 pathDataProcessed = pathGithubFolder+ "data/processed/"
 

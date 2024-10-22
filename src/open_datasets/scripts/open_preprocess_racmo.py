@@ -90,7 +90,6 @@ def read_RACMO(downscaling_type, time_resolution, years, variable, since_1940 =T
             print(" it might be hard to process the data for the whole period, please be patient, or choose a lower time resolution or spatial resolution")
             list_ds_paths = []
             ds_list = []
-            print(path)
             for year in tqdm(np.arange(int(years[0]), int(years[-1])+1)):
                 path1k= os.path.join(path,   "Downscaling_GR", time_resolution, str(year))
                 fpath = pick_file_from_list(path1k, variable)
