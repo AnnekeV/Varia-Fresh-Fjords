@@ -178,3 +178,4 @@ df_fric_monthly_basin = (
 )
 df_Basal_basin_monthly = df_vhd_monthly_basin + df_gf_monthly_basin + df_fric_monthly_basin
 df_Basal_GrIS_monthly = df_Basal_basin_monthly.sum(axis=1)
+df_Basal_GrIS_annual = df_Basal_GrIS_monthly.sum()
