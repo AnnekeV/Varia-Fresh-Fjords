@@ -23,7 +23,7 @@ from scripts.paths import *
 # In[522]:
 
 
-pathKing = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/raw/solid_discharge/King2020_doi_10_5061_dryad_qrfj6q5cb__v20200429/GrIS_D_1985-2018.xlsx'
+pathKing =  pathDataGithub +'raw/solid_discharge/King2020_doi_10_5061_dryad_qrfj6q5cb__v20200429/GrIS_D_1985-2018.xlsx'
 
 
 # In[523]:

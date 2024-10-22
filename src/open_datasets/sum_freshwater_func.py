@@ -592,7 +592,7 @@ dfPrecipFjordsSector_CARRA_month.columns = (
     dfPrecipFjordsSector_CARRA_month.columns.get_level_values(1)
 )
 # %%
-open_previous = True
+open_previous = False
 
 if open_previous:
     dsSectorSum = xr.open_dataset(pathDataTemp + "RACMO2.3p2_1k_sector_sum_2024_06_12.nc")
@@ -623,6 +623,18 @@ else:
             .rename({"section_numbers_adjusted": "Basins"}),
         ]
     )
+    # Add basal melt GrIS
+    df_Basal_Basin_monthly = pd.read_csv(pathDataTemp+ "Basal_melt/Basal_basin_monthly.csv", index_col=0)
+    start_year = 1980
+    end_year = 2023
+    date_range = pd.date_range(start=f'{start_year}-01-01', end=f'{end_year}-12-31', freq='MS')
+    repeated_cycle = np.tile(np.squeeze(df_Basal_Basin_monthly.values), (end_year - start_year + 1, 1))
+    df_time_series_Basal = pd.DataFrame(data=repeated_cycle, index=date_range, columns=df_Basal_Basin_monthly.columns)
+    np.shape(repeated_cycle )
+    ds_time_series_Basal = xr.DataArray(df_time_series['Basal_GrIS'], dims=['time'], coords={'time': date_range}, name='Basal_GrIS')
+    xr.merge([ds_time_series_Basal, dsSectorSum])
+    dsSectorSum =dsSectorSum.drop('Precipitation Fjords CARRA')
+
     # dsSectorSumD['Solid Ice discharge original'] = dfRegionDMankoff.stack().to_xarray()
     # dsSectorSum['Solid Ice discharge (interp)'] = dsSectorSum['Solid Ice discharge original'].interp(Date=dsSectorSum.time, method='linear')
     # # groupby month and mean
@@ -657,7 +669,7 @@ else:
     # export dsSectorSum to csv
     start = dsSectorSum.time[0].dt.strftime("%Y").values
     end = dsSectorSum.time[-1].dt.strftime("%Y").values
-    dsSectorSum.to_netcdf(pathDataTemp + f"RACMO2.3p2_1k_sector_sum_2024_06_13.nc")
+    dsSectorSum.to_netcdf(pathDataTemp + f"RACMO2.3p2_1k_sector_sum_2024_10_22.nc")
 
 dsSectorSum = dsSectorSum.where(dsSectorSum != 0)
 
@@ -701,7 +713,7 @@ col_order_rel = [
 
 # make a list of all the names of data variables in dsSectorSum
 period1 = {"start": "1990", "end": "2004"}
-period2 = {"start": "2005", "end": "2022"}
+period2 = {"start": "2005", "end": "2023"}
 
 try:
     dsMonthlyGr = dsSectorSum.copy(deep=True).drop("winter_year").drop("summer_year")
@@ -728,7 +740,7 @@ data_std_seasonal_period2 = (
     .groupby("time.month")
     .std()
 )
-# do the same for 2002-2012
+
 data_mean_seasonal_period1 = (
     dsMonthlyGr.sel(time=slice(period1["start"], period1["end"]))
     .sum(dim="Basins")
