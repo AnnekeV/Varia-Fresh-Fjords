@@ -63,8 +63,10 @@ dict_shorter_name = {'Solid Ice discharge (weighted mean)': 'Solid Ice Discharge
 
 # for legend
 # plot ds solid discharge
-col_order_abs = ['Solid Ice Discharge', 'Precipitation Fjords',  'Liquid Runoff Tundra', 'Liquid Runoff Ice Caps','Liquid Runoff Ice Sheet', ]
-col_order_rel = ['Solid Ice Discharge',   'Liquid Runoff Ice Sheet', 'Liquid Runoff Ice Caps','Liquid Runoff Tundra','Precipitation Fjords', ]
+col_order_abs = ['Solid Ice Discharge', 'Precipitation Fjords',  'Liquid Runoff Tundra', 'Liquid Runoff Ice Caps','Liquid Runoff Ice Sheet', 'Basal melt', ]
+col_order_rel = ['Basal melt', 'Solid Ice Discharge',   'Liquid Runoff Ice Sheet', 'Liquid Runoff Ice Caps','Liquid Runoff Tundra','Precipitation Fjords', ]
+
+ col_order_rel_sector = col_order_rel
 
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 FW_type_long = ['Discharge [Gt yr-1]', 'Runoff GrIS', 'Runoff Tundra',
@@ -79,3 +81,7 @@ dictFWcolor['Basal'] = dict_colors_FW['Basal melt']
 
 
 dict_consistent_naming = {'Solid Ice Discharge': 'Solid ice discharge', 'Liquid Runoff Ice Sheet': 'GrIS runoff', 'Liquid Runoff Tundra': 'Tundra runoff', 'Liquid Runoff Ice Caps': 'GIC runoff', 'Precipitation Fjords': 'Precipitation', 'Precipitation Fjords CARRA': 'Precipitation CARRA'}
+
+
+month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+month_names_id = dict(zip(np.arange(1, 13), month_names))
