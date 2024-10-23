@@ -591,11 +591,23 @@ dfPrecipFjordsSector_CARRA_month = (
 dfPrecipFjordsSector_CARRA_month.columns = (
     dfPrecipFjordsSector_CARRA_month.columns.get_level_values(1)
 )
+# %% 
+# Basal melt
+
+df_Basal_Basin_monthly = pd.read_csv(pathDataTemp+ "Basal_melt/Basal_basin_monthly.csv", index_col=0)
+start_year = 1980
+end_year = 2023
+date_range = pd.date_range(start=f'{start_year}-01-01', end=f'{end_year}-12-31', freq='MS')
+repeated_cycle = np.tile(np.squeeze(df_Basal_Basin_monthly.values), (end_year - start_year + 1, 1))
+df_time_series_Basal = pd.DataFrame(data=repeated_cycle, index=date_range, columns=df_Basal_Basin_monthly.columns)
+ds_time_series_Basal = df_time_series_Basal.stack().to_xarray().to_dataset(name="Basal melt").rename({"level_0":"time","level_1":"Basins"})
+
 # %%
-open_previous = False
+open_previous = True
 
 if open_previous:
-    dsSectorSum = xr.open_dataset(pathDataTemp + "RACMO2.3p2_1k_sector_sum_2024_06_12.nc")
+    # dsSectorSum = xr.open_dataset(pathDataTemp + "RACMO2.3p2_1k_sector_sum_2024_06_12.nc")
+    dsSectorSum = xr.open_dataset(pathDataTemp + "Sector_sum_2024_10_23.nc")
 
 else:
 
@@ -617,23 +629,14 @@ else:
             .to_xarray()
             .to_dataset(name="Precipitation Fjords")
             .rename({"section_numbers_adjusted": "Basins"}),
-            dfPrecipFjordsSector_CARRA_month.stack()
-            .to_xarray()
-            .to_dataset(name="Precipitation Fjords CARRA")
-            .rename({"section_numbers_adjusted": "Basins"}),
+            # dfPrecipFjordsSector_CARRA_month.stack()
+            # .to_xarray()
+            # .to_dataset(name="Precipitation Fjords CARRA")
+            # .rename({"section_numbers_adjusted": "Basins"}),
+            ds_time_series_Basal,
         ]
     )
-    # Add basal melt GrIS
-    df_Basal_Basin_monthly = pd.read_csv(pathDataTemp+ "Basal_melt/Basal_basin_monthly.csv", index_col=0)
-    start_year = 1980
-    end_year = 2023
-    date_range = pd.date_range(start=f'{start_year}-01-01', end=f'{end_year}-12-31', freq='MS')
-    repeated_cycle = np.tile(np.squeeze(df_Basal_Basin_monthly.values), (end_year - start_year + 1, 1))
-    df_time_series_Basal = pd.DataFrame(data=repeated_cycle, index=date_range, columns=df_Basal_Basin_monthly.columns)
-    np.shape(repeated_cycle )
-    ds_time_series_Basal = xr.DataArray(df_time_series['Basal_GrIS'], dims=['time'], coords={'time': date_range}, name='Basal_GrIS')
-    xr.merge([ds_time_series_Basal, dsSectorSum])
-    dsSectorSum =dsSectorSum.drop('Precipitation Fjords CARRA')
+
 
     # dsSectorSumD['Solid Ice discharge original'] = dfRegionDMankoff.stack().to_xarray()
     # dsSectorSum['Solid Ice discharge (interp)'] = dsSectorSum['Solid Ice discharge original'].interp(Date=dsSectorSum.time, method='linear')
@@ -696,6 +699,7 @@ dsSectorSum = dsSectorSum[variables_sorted]
 
 # plot ds solid discharge
 col_order_abs = [
+    "Basal melt",
     "Solid Ice Discharge",
     "Precipitation Fjords",
     "Liquid Runoff Tundra",
@@ -708,6 +712,7 @@ col_order_rel = [
     "Liquid Runoff Ice Caps",
     "Liquid Runoff Tundra",
     "Precipitation Fjords",
+    "Basal melt",
 ]
 
 

@@ -17,7 +17,7 @@ colors_FW = ['tab:orange', 'plum', 'tab:green', 'tab:red', 'tab:blue']
 dict_colors_FW = dict(zip(data_varsFW, colors_FW))
 dict_colors_FW['Solid Ice Discharge'] = 'tab:blue'
 dict_colors_FW['Precipitation Fjords CARRA'] = 'tab:red'
-dict_colors_FW['Basal'] = 'tab:olive'
+dict_colors_FW['Basal melt'] = 'tab:brown'
 
 # Convert the colors to RGB format and store them in the new dictionary
 dict_colors_FW_rgb = {}
@@ -75,7 +75,7 @@ dictFWcolor_long['Runoff Ice Caps'] = 'plum'
 FW_type = ["Solid", "IceRun", "Tundra", "Precip", "IceCap"]
 dictFWcolor = dict(zip(FW_type, colors))
 dictFWcolor['IceCap'] = 'plum'
-dictFWcolor['Basal'] = 'tab:olive'
+dictFWcolor['Basal'] = dict_colors_FW['Basal melt']
 
 
 dict_consistent_naming = {'Solid Ice Discharge': 'Solid ice discharge', 'Liquid Runoff Ice Sheet': 'GrIS runoff', 'Liquid Runoff Tundra': 'Tundra runoff', 'Liquid Runoff Ice Caps': 'GIC runoff', 'Precipitation Fjords': 'Precipitation', 'Precipitation Fjords CARRA': 'Precipitation CARRA'}
