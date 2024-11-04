@@ -2,6 +2,7 @@ pathdata = "/Volumes/imau01/rapid/RACMO2.3p2/FGRN055"
 
 pathAnnekeFolderIMAU02 = "/Volumes/imau02/rapid/Anneke/RACMO2.3p2/FGRN055"
 pathIMAU02 = "/Volumes/imau02/rapid/Anneke/"
+pathIMAU01 = "/Volumes/imau01/rapid/"
 pathRACMO_fjords = pathAnnekeFolderIMAU02+"//Downscaling_GR/Monthly/fjords_only/"
 
 
@@ -23,3 +24,7 @@ pathFigures = pathGithubFolder+ "results/figures/"
 
 folder500m = "/Volumes/imau02/rapid/Anneke/RACMO2.3p2/FGRN055/Downscaling_GR_500m/"
 path_sums_masks_500m  = "/Volumes/imau02/rapid/Anneke/RACMO2.3p2/FGRN055/Downscaling_GR_500m/Annual/Sums and masks/"
+
+
+csv_seasonal_sector = f'{pathDataProcessed}/Seasonal cycle per sector with basal'
+

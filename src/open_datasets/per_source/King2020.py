@@ -148,13 +148,7 @@ ds_D_king_per_basin_sum_uncorrected = ds_D_king_per_basin.groupby([ 'Time', 'bas
 ds_D_king_per_basin_mean = ds_D_king_per_basin.groupby([ 'Time', 'basin_nr']).mean()
 
 
-# In[453]:
 
-
-
-
-
-# In[529]:
 
 
 ds_King_meta['2000_2005_mean'] = df_D_2000_2005_mean
@@ -167,20 +161,6 @@ ds_D_king_basin_coverage = (ds_D_king[ds_D_king.Value_Uncertainty=='Discharge (G
 ds_D_king_basin_coverage[ds_D_king_basin_coverage.index > '2000'] = 1
 
 ds_D_king_per_basin_sum = (ds_D_king_per_basin_sum_uncorrected.reset_index().pivot(index='Time', columns='basin_nr', values='Value').T/ds_D_king_coverage).T
-
-
-
-
-# In[544]:
-
-
-ds_D_king_basin_coverage[ds_D_king_basin_coverage>0]['1985': '1995'].mean()
-
-
-
-
-
-# In[264]:
 
 
 

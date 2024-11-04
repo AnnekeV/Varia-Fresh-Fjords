@@ -56,7 +56,9 @@ dict_linestyle_FW = {'Liquid Runoff Ice Sheet': '-',
  'Precipitation Fjords': '-',
  'Solid Ice discharge (weighted mean)': '-',
  'Solid Ice Discharge': '-',
- 'Precipitation Fjords CARRA': ':'}
+ 'Precipitation Fjords CARRA': ':', 
+ 'Basal melt':(5, (10, 3)), 
+ }
 
  # change labels of legend from Solid Ice discharge (weighted mean) to Solid Ice discharge 
 dict_shorter_name = {'Solid Ice discharge (weighted mean)': 'Solid Ice Discharge'}
@@ -65,8 +67,7 @@ dict_shorter_name = {'Solid Ice discharge (weighted mean)': 'Solid Ice Discharge
 # plot ds solid discharge
 col_order_abs = ['Solid Ice Discharge', 'Precipitation Fjords',  'Liquid Runoff Tundra', 'Liquid Runoff Ice Caps','Liquid Runoff Ice Sheet', 'Basal melt', ]
 col_order_rel = ['Basal melt', 'Solid Ice Discharge',   'Liquid Runoff Ice Sheet', 'Liquid Runoff Ice Caps','Liquid Runoff Tundra','Precipitation Fjords', ]
-
- col_order_rel_sector = col_order_rel
+col_order_rel_sector = col_order_rel
 
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 FW_type_long = ['Discharge [Gt yr-1]', 'Runoff GrIS', 'Runoff Tundra',
@@ -78,9 +79,10 @@ FW_type = ["Solid", "IceRun", "Tundra", "Precip", "IceCap"]
 dictFWcolor = dict(zip(FW_type, colors))
 dictFWcolor['IceCap'] = 'plum'
 dictFWcolor['Basal'] = dict_colors_FW['Basal melt']
+dictFWcolor['Basal melt'] = dict_colors_FW['Basal melt']
 
 
-dict_consistent_naming = {'Solid Ice Discharge': 'Solid ice discharge', 'Liquid Runoff Ice Sheet': 'GrIS runoff', 'Liquid Runoff Tundra': 'Tundra runoff', 'Liquid Runoff Ice Caps': 'GIC runoff', 'Precipitation Fjords': 'Precipitation', 'Precipitation Fjords CARRA': 'Precipitation CARRA'}
+dict_consistent_naming = {'Solid Ice Discharge': 'Solid ice discharge', 'Liquid Runoff Ice Sheet': 'GrIS runoff', 'Liquid Runoff Tundra': 'Tundra runoff', 'Liquid Runoff Ice Caps': 'GIC runoff', 'Precipitation Fjords': 'Precipitation', 'Precipitation Fjords CARRA': 'Precipitation CARRA', 'Basal melt':'Basal melt'}
 
 
 month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
