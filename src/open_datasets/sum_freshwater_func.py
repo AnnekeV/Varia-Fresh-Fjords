@@ -16,6 +16,19 @@ import pandas as pd
 pathIMAU02 = "/Volumes/imau02/rapid/Anneke/"
 
 
+
+# masks
+
+fpath_adj_sect  = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/adjusted_section_numbers_slater.nc'
+fpath_masks1k = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/masks1k.nc'
+folder_MARRACMO1km = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/raw/liquid/"
+
+# open all files and align time
+ds_masks1k = xr.open_dataset(fpath_masks1k)
+ds_adj_sect = xr.open_dataset(fpath_adj_sect)
+
+#
+
 dict_coords = {}
 dict_vars = {}
 time_resolution = "Annual"
@@ -457,7 +470,12 @@ else:
         .drop("height")
     )
     dsRunoffTundra_mmyear_SECTOR.to_netcdf(path_monthly_racmo + fname_runofftundraMM)
-
+# add 2023
+ds_runoff_tundra2023 = xr.open_dataset(f"{pathDataTemp}runoff_tundra.2023.RACMO2.3p2_ERA5_3h_FGRN055.1km.MM.tundra.nc", engine='netcdf4')
+ds_runoff_tundra2023['Tundra_basins'] = ds_masks1k['LSM']
+ds_runoff_tundra2023['Tundra_basins'].values = ds_adj_sect['section_numbers_adjusted'].values
+ds_runoff_tundra2023_Basins = ds_runoff_tundra2023.groupby('Tundra_basins').sum().rename({'Liquid Runoff Tundra':'runoff'})
+dsRunoffTundra_mmyear_SECTOR = xr.concat([ds_runoff_tundra2023_Basins,dsRunoffTundra_mmyear_SECTOR], dim='time').sortby('time').resample(time='MS').mean()
 
 dfRunoffTundraSector = (
     kgperm2_to_Gt(dsRunoffTundra_mmyear_SECTOR["runoff"])
@@ -603,7 +621,7 @@ df_time_series_Basal = pd.DataFrame(data=repeated_cycle, index=date_range, colum
 ds_time_series_Basal = df_time_series_Basal.stack().to_xarray().to_dataset(name="Basal melt").rename({"level_0":"time","level_1":"Basins"})
 
 # %%
-open_previous = True
+open_previous = False
 
 if open_previous:
     # dsSectorSum = xr.open_dataset(pathDataTemp + "RACMO2.3p2_1k_sector_sum_2024_06_12.nc")
@@ -628,7 +646,7 @@ else:
             dfPrecipFjordsSector_RACMO_month.stack()
             .to_xarray()
             .to_dataset(name="Precipitation Fjords")
-            .rename({"section_numbers_adjusted": "Basins"}),
+            .rename({"section_numbers_adjusted": "Basins"}) /1e6,
             # dfPrecipFjordsSector_CARRA_month.stack()
             # .to_xarray()
             # .to_dataset(name="Precipitation Fjords CARRA")
@@ -777,6 +795,18 @@ data_std_seasonal_period2["Solid Ice Discharge"].values = (
 data_std_seasonal_period2["Solid Ice Discharge"].values = (
     np.squeeze(dfGIS_period2.groupby(dfGIS_period2.index.month).std().values) / 12
 )
+
+
+data_mean_seasonal_all = (
+    dsMonthlyGr.sel(time=slice(period1["start"], period2["end"])).
+    sum(dim="Basins").groupby("time.month").mean()    
+)
+data_std_seasonal_all = (
+    dsMonthlyGr.sel(time=slice(period1["start"], period2["end"])).sum(dim="Basins").groupby("time.month").std())
+dfGIS_all = pd.read_csv(path_Mankoff2020Solid + "GIS_D.csv", index_col=0, parse_dates=True)[period1["start"] : period2["end"]]
+data_mean_seasonal_all["Solid Ice Discharge"].values = (np.squeeze(dfGIS_all.groupby(dfGIS_all.index.month).mean().values) / 12)
+data_std_seasonal_all["Solid Ice Discharge"].values = (np.squeeze(dfGIS_all.groupby(dfGIS_all.index.month).std().values) / 12)
+
 # %% MAR 1 KM RUNOFF
 
 import gzip
@@ -821,13 +851,7 @@ def open_compressed_xarray(file_path):
     ds = xr.open_dataset(decompressed_file, engine='netcdf4', decode_times=False)
     return ds
 
-fpath_adj_sect  = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/adjusted_section_numbers_slater.nc'
-fpath_masks1k = '/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/temp/masks1k.nc'
-folder_MARRACMO1km = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/raw/liquid/"
 
-# open all files and align time
-ds_masks1k = xr.open_dataset(fpath_masks1k)
-ds_adj_sect = xr.open_dataset(fpath_adj_sect)
 
 ds_run_MAR = open_compressed_xarray(folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz")
 ds_run_MAR['years_since_19400115'] = ds_run_MAR.time
