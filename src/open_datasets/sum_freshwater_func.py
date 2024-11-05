@@ -715,24 +715,6 @@ variables_sorted = (
 
 dsSectorSum = dsSectorSum[variables_sorted]
 
-# plot ds solid discharge
-col_order_abs = [
-    "Basal melt",
-    "Solid Ice Discharge",
-    "Precipitation Fjords",
-    "Liquid Runoff Tundra",
-    "Liquid Runoff Ice Caps",
-    "Liquid Runoff Ice Sheet",
-]
-col_order_rel = [
-    "Solid Ice Discharge",
-    "Liquid Runoff Ice Sheet",
-    "Liquid Runoff Ice Caps",
-    "Liquid Runoff Tundra",
-    "Precipitation Fjords",
-    "Basal melt",
-]
-
 
 # make a list of all the names of data variables in dsSectorSum
 period1 = {"start": "1990", "end": "2004"}
