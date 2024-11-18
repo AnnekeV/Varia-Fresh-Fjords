@@ -656,7 +656,7 @@ else:
     )
 
 
-    # dsSectorSumD['Solid Ice discharge original'] = dfRegionDMankoff.stack().to_xarray()
+    # dsSectorSum['Solid Ice discharge original'] = dfRegionDMankoff.stack().to_xarray()
     # dsSectorSum['Solid Ice discharge (interp)'] = dsSectorSum['Solid Ice discharge original'].interp(Date=dsSectorSum.time, method='linear')
     # # groupby month and mean
     # dsSectorSum['Solid Ice discharge (mean)'] = dsSectorSum['Solid Ice discharge original'].groupby('Date.month').mean()
@@ -778,16 +778,13 @@ data_std_seasonal_period2["Solid Ice Discharge"].values = (
     np.squeeze(dfGIS_period2.groupby(dfGIS_period2.index.month).std().values) / 12
 )
 
-
-data_mean_seasonal_all = (
-    dsMonthlyGr.sel(time=slice(period1["start"], period2["end"])).
+data_mean_seasonal_good_data = (
+    dsMonthlyGr.sel(time=slice('2009', '2023')).
     sum(dim="Basins").groupby("time.month").mean()    
 )
-data_std_seasonal_all = (
-    dsMonthlyGr.sel(time=slice(period1["start"], period2["end"])).sum(dim="Basins").groupby("time.month").std())
-dfGIS_all = pd.read_csv(path_Mankoff2020Solid + "GIS_D.csv", index_col=0, parse_dates=True)[period1["start"] : period2["end"]]
-data_mean_seasonal_all["Solid Ice Discharge"].values = (np.squeeze(dfGIS_all.groupby(dfGIS_all.index.month).mean().values) / 12)
-data_std_seasonal_all["Solid Ice Discharge"].values = (np.squeeze(dfGIS_all.groupby(dfGIS_all.index.month).std().values) / 12)
+data_std_seasonal_good_data = (
+    dsMonthlyGr.sel(time=slice('2009', '2023')).sum(dim="Basins").groupby("time.month").std())
+
 
 # %% MAR 1 KM RUNOFF
 

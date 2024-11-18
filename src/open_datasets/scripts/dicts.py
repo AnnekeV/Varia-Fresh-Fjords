@@ -66,7 +66,7 @@ dict_shorter_name = {'Solid Ice discharge (weighted mean)': 'Solid Ice Discharge
 # for legend
 # plot ds solid discharge
 col_order_abs = ['Solid Ice Discharge', 'Precipitation Fjords',  'Liquid Runoff Tundra', 'Liquid Runoff Ice Caps','Liquid Runoff Ice Sheet', 'Basal melt', ]
-col_order_rel = ['Basal melt', 'Solid Ice Discharge',   'Liquid Runoff Ice Sheet', 'Liquid Runoff Ice Caps','Liquid Runoff Tundra','Precipitation Fjords', ]
+col_order_rel = ['Basal melt', 'Solid Ice Discharge',   'Liquid Runoff Ice Sheet','Liquid Runoff Tundra','Liquid Runoff Ice Caps','Precipitation Fjords', ]
 col_order_rel_sector = col_order_rel
 
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']

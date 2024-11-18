@@ -143,7 +143,7 @@ df_monthly_fraction_runoff_of_total_runoff = (
 
 
 # In[15]:
-folder = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/processed/Seasonal cycle per sector/"
+folder = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/data/processed/Archive/Seasonal cycle per sector/"
 files = glob.glob(folder + "*.csv")
 
 df_basin_monthly_runoff = pd.DataFrame()
