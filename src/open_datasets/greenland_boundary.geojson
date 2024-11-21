@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "greenland_boundary",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3413" } },
-"features": [
-{ "type": "Feature", "properties": { "fid": 1, "label": "QGreenland Data Extent" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 1228670.0, -329624.0 ], [ 1228670.0, -3611178.0 ], [ -998012.0, -3611178.0 ], [ -998012.0, -329624.0 ], [ 1228670.0, -329624.0 ] ] ] } }
-]
-}

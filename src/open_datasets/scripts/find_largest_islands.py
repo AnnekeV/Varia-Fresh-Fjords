@@ -1,6 +1,10 @@
+# Makes script ot find 'islands' and saves them in a file
+
+
 import numpy as np
 import xarray as xr
 from tqdm import tqdm
+from paths import *
 import os
 
 try:
