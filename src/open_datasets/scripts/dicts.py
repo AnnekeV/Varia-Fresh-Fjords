@@ -81,9 +81,9 @@ dictFWcolor['IceCap'] = 'plum'
 dictFWcolor['Basal'] = dict_colors_FW['Basal melt']
 dictFWcolor['Basal melt'] = dict_colors_FW['Basal melt']
 
-
 dict_consistent_naming = {'Solid Ice Discharge': 'Solid ice discharge', 'Liquid Runoff Ice Sheet': 'GrIS runoff', 'Liquid Runoff Tundra': 'Tundra runoff', 'Liquid Runoff Ice Caps': 'GIC runoff', 'Precipitation Fjords': 'Precipitation', 'Precipitation Fjords CARRA': 'Precipitation CARRA', 'Basal melt':'Basal melt'}
 
 
 month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 month_names_id = dict(zip(np.arange(1, 13), month_names))
+
