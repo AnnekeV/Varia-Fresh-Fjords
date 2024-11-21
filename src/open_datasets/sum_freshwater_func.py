@@ -76,109 +76,8 @@ dsRunoff_RACMO_1k_YY_GIC_sections = (
 )
 
 
-# %%
-folder500m = pathIMAU02 + "RACMO2.3p2/FGRN055/Downscaling_GR_500m/"
-openMAR = True
-dsRunoff500mRACMO = xr.open_mfdataset(
-    folder500m + "Annual/runoff.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.YY_copy.nc"
-)
-# dsRunoff500mMAR   = xr.open_dataset(folder500m + "Annual/runoff.1940-2023.MAR3v14.GrIS.0.5km.YY.nc")
-
-# SUM
-if os.path.exists(
-    folder500m
-    + "Annual/sum/runoff_yearly_sum.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.YY.nc"
-):
-    dsRunoff500mRACMO_sum = xr.open_mfdataset(
-        folder500m
-        + "Annual/sum/runoff_yearly_sum.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.YY.nc"
-    )
-else:
-    dsRunoff500mRACMO_sum = dsRunoff500mRACMO.runoffcorr.sum(dim=["x", "y"]) / 4
-if openMAR:
-    if os.path.exists(
-        folder500m + "Annual/sum/runoff_yearly_sum.1940-2023.MAR3v14.GrIS.0.5km.YY.nc"
-    ):
-        dsRunoff500mMAR_sum = xr.open_dataset(
-            folder500m + "Annual/sum/runoff_yearly_sum.1940-2023.MAR3v14.GrIS.0.5km.YY.nc"
-        )
-    else:
-        dsRunoff500mMAR_sum = ds500mMAR.runoffcorr.sum(dim=["x", "y"]) / 4
-    dsRunoff500mMAR_sum = dsRunoff500mMAR_sum / 1e6
-    dsRunoff500mMAR_sum.attrs["units"] = "km3 w.e."
-    dsRunoff500mMAR_sum.resample(time="YS").sum()
-
-dsRunoff500mRACMO_sum = dsRunoff500mRACMO_sum / 1e6  # mm/km2 to km3
-dsRunoff500mRACMO_sum.attrs["units"] = "km3 w.e."
-dsRunoff500mRACMO_sum.resample(time="YS").sum()
-# %%
-path_sums_masks_500m = pathIMAU02 + "RACMO2.3p2/FGRN055/Downscaling_GR_500m/Annual/Sums and masks/"
-
-file_paths = {
-    "dsRunoff500mRACMO_GIC": path_sums_masks_500m
-    + "runoff.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.GIC.YY.nc",
-    "dsRunoff500mRACMO_GrIS": path_sums_masks_500m
-    + "runoff.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.GrIS.YY.nc",
-    "dsRunoff500mRACMO_GIC_sum": path_sums_masks_500m
-    + "runoff_yearly_sum.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.GIC.YY.nc",
-    "dsRunoff500mRACMO_GrIS_sum": path_sums_masks_500m
-    + "runoff_yearly_sum.1940-2023.BN_RACMO2.3p2_ERA5_3h_1940_FGRN055.GrIS.0.5km.GrIS.YY.nc",
-}
-datasets_RACMO_runoff_500m = {}
-
-for name, file_path in file_paths.items():
-    if os.path.exists(file_path):
-        datasets_RACMO_runoff_500m[name] = xr.open_dataset(file_path)
-        print(f"Opened {file_path}")
-
-dsRunoff500mRACMO_GIC_sum = datasets_RACMO_runoff_500m["dsRunoff500mRACMO_GIC_sum"] / 1e6
-dsRunoff500mRACMO_GrIS_sum = datasets_RACMO_runoff_500m["dsRunoff500mRACMO_GrIS_sum"] / 1e6
-dsRunoff500mRACMO_GIC = datasets_RACMO_runoff_500m["dsRunoff500mRACMO_GIC"]
-dsRunoff500mRACMO_GrIS = datasets_RACMO_runoff_500m["dsRunoff500mRACMO_GrIS"]
 
 
-fpaths_MAR = {
-    "dsRunoff500mMAR_GIC": path_sums_masks_500m + "runoff.1940-2023.MAR3v14.GrIS.0.5km.GIC.YY.nc",
-    "dsRunoff500mMAR_GrIS": path_sums_masks_500m + "runoff.1940-2023.MAR3v14.GrIS.0.5km.GrIS.YY.nc",
-    "dsRunoff500mMAR_GIC_sum": path_sums_masks_500m
-    + "runoff_yearly_sum.1940-2023.MAR3v14.GrIS.0.5km.GIC.YY.nc",
-    "dsRunoff500mMAR_GrIS_sum": path_sums_masks_500m
-    + "runoff_yearly_sum.1940-2023.MAR3v14.GrIS.0.5km.GrIS.YY.nc",
-}
-
-datasets_MAR_runoff_500m = {}
-
-for name, file_path in fpaths_MAR.items():
-    if os.path.exists(file_path):
-        datasets_MAR_runoff_500m[name] = xr.open_dataset(file_path)
-        print(f"Opened {file_path}")
-dsRunoff500mMAR_GIC_sum = datasets_MAR_runoff_500m["dsRunoff500mMAR_GIC_sum"] / 1e6
-dsRunoff500mMAR_GrIS_sum = datasets_MAR_runoff_500m["dsRunoff500mMAR_GrIS_sum"] / 1e6
-dsRunoff500mMAR_GIC = datasets_MAR_runoff_500m["dsRunoff500mMAR_GIC"]
-dsRunoff500mMAR_GrIS = datasets_MAR_runoff_500m["dsRunoff500mMAR_GrIS"]
-
-for dataset in [
-    dsRunoff500mRACMO_GIC_sum,
-    dsRunoff500mRACMO_GrIS_sum,
-    dsRunoff500mMAR_GIC_sum,
-    dsRunoff500mMAR_GrIS_sum,
-]:
-    dataset.attrs["units"] = "km3 w.e."
-    # for variable in dataset
-    for variable in dataset.variables:
-        # if 'units' in dataset[variable].attrs:
-        # if dtype is float
-        if "units" in dataset[variable].attrs:
-            dataset[variable].values = dataset[variable].values / 1e6
-            dataset = dataset.resample(time="YS").sum()
-
-    # dataset.values = dataset.values/1e6
-# %%
-# data/temp/sections_500m_compressed.nc
-mask_0_5km = xr.open_dataset("../../data/temp/sections_500m_compressed.nc")
-mask_0_5_background = xr.open_dataset(
-    pathIMAU02 + "RACMO2.3p2/FGRN055/Downscaling_GR_500m/GrIS_topo_icemask_lsm_lon_lat_0.5km.nc"
-)
 masks1k = xr.open_dataset("/Users/annek/Documents/RACMO2.3p2/FGRN055/Downscaling_GR/masks1k.nc")
 
 # %% SOLID DISCHARGE
@@ -226,26 +125,11 @@ dsPrecipFjordsCARRA_Annual_Sum = (
     .resample(time="YS")
     .sum()
 )
-
-# %%
-for ds in [
-    dsRunoff500mRACMO_GrIS_sum,
-    dsRunoff500mRACMO_GIC_sum,
-    dsRunoff500mMAR_GrIS_sum,
-    dsRunoff500mMAR_GIC_sum,
-]:
-    ds = ds.resample(time="YS").sum()
 # %%
 dfRunoffTundra = (
     dsRunoffTundraSum.squeeze().to_dataframe(name="Runoff Tundra").drop(columns="height")
 )
-# dfRunoffIce = dsRunoffIce.sum(dim=['rlon', 'rlat']).squeeze().to_dataframe(name='Runoff Ice').drop(columns='height')
-dfRunoffRACMOGrIS = (
-    dsRunoff500mRACMO_GrIS_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff GrIS")
-)
-dfRunoffRACMOGIC = (
-    dsRunoff500mRACMO_GIC_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff Ice Caps")
-)
+
 dfPrecipFjordsVol = dsPrecipFjordsVolSum["precipcorr"].to_dataframe(name="Precipitation Fjords")
 dfSolidMankoff = dfGISDMankoff.copy(deep=True)
 
@@ -265,22 +149,14 @@ elif time_resolution == "Monthly":
     dfSolidMankoff = dfSolidMankoff.groupby(dfSolidMankoff.index.strftime("%Y-%m")).mean()
 #    dfPrecipFjordsVol = dfPrecipFjordsVol.groupby(dfPrecipFjordsVol.index.strftime('%Y-%m')).mean()
 
-dfRunoff500mRACMO_GIC = (
-    dsRunoff500mRACMO_GIC_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff Ice Caps (RACMO 500m)")
-)
-dfRunoff500mMAR_GIC_sum = dsRunoff500mMAR_GIC_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff Ice Caps (MAR 500m)")
 dfRunoff_RACMO_1k_YY_GIC_sum = dsRunoff_RACMO_1k_YY_GIC_sum.squeeze().to_dataframe(name="Runoff Ice Caps (RACMO 1km)")
-dfRunoff500mMAR_GrIS_sum = dsRunoff500mMAR_GrIS_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff GrIS (MAR 500m)")
-dfRunoff500mRACMO_GrIS_sum = dsRunoff500mRACMO_GrIS_sum["runoffcorr"].squeeze().to_dataframe(name="Runoff GrIS (RACMO 500m)")
 dfRunoff_RACMO_1k_YY_GrIS_sum = dsRunoff_RACMO_1k_YY_GrIS_sum.squeeze().to_dataframe(name="Runoff GrIS (RACMO 1km)")
 dfPrecipFjordsCARRA = dsPrecipFjordsCARRA_Annual_Sum["precip"].squeeze().to_dataframe(name="Precipitation Fjords (CARRA)")
 
 dfPrecipFjordsCARRA.index = dfPrecipFjordsCARRA.index.year
-dfRunoff500mMAR_GIC_sum.index = dfRunoff500mMAR_GIC_sum.index.year
-dfRunoff500mRACMO_GIC.index = dfRunoff500mRACMO_GIC.index.year
+
 dfRunoff_RACMO_1k_YY_GIC_sum.index = dfRunoff_RACMO_1k_YY_GIC_sum.index.year
-dfRunoff500mMAR_GrIS_sum.index = dfRunoff500mMAR_GrIS_sum.index.year
-dfRunoff500mRACMO_GrIS_sum.index = dfRunoff500mRACMO_GrIS_sum.index.year
+
 dfRunoff_RACMO_1k_YY_GrIS_sum.index = dfRunoff_RACMO_1k_YY_GrIS_sum.index.year
 
 
@@ -292,9 +168,6 @@ df_sum_GIS_55 = pd.concat(
         dfRunoffTundra,
         dfPrecipFjordsVol,
         dfPrecipFjordsCARRA,
-        dfRunoff500mMAR_GIC_sum,
-        dfRunoff500mMAR_GrIS_sum,
-        dfRunoff500mRACMO_GrIS_sum,
         dfRunoffRACMOGrIS,
         dfRunoffRACMOGIC,
 
@@ -314,13 +187,6 @@ filterNanMonths = (
 df_sum_GIS_55Relative = (df_sum_GIS_55.iloc[:, :5].mask(filterNanMonths).T / df_sum_GIS_55.iloc[:, :5].sum(axis=1)).T
 
 
-for ds in [
-    dsRunoff500mRACMO_GrIS_sum,
-    dsRunoff500mRACMO_GIC_sum,
-    dsRunoff500mMAR_GrIS_sum,
-    dsRunoff500mMAR_GIC_sum,
-]:
-    ds = ds.resample(time="YS").sum()
 
 
 # %% =============
@@ -372,19 +238,6 @@ def mask_MougBasins_ice(ds, IceOrTundra):
 
 # %% loading datasets
 
-
-if "dsRunoff500mMAR_GIC_per_section" not in locals():
-    print("Opening the data")
-    dsRunoff500mMAR_GIC_per_section = xr.open_dataset(
-        path_sums_masks_500m + "runoff.1940-2023.MAR3v14.GIC.0.5km.GIC.YY.per_section.nc"
-    )
-dsRunoff500mMAR_GIC_per_section
-
-# add units
-dsRunoff500mMAR_GIC_per_section.attrs["units"] = "km3 w.e. per year"
-dsRunoff500mMAR_GIC_per_section.attrs["Description"] = (
-    "Sum per sector of the Greenland Ice Caps for the 500m MAR3.14 data"
-)
 #  GrIS
 dsRunoffIceSectormm = xr.open_dataset(
     pathIMAU02
@@ -401,32 +254,7 @@ dfRunoffIceSector = (
 
 dfRunoffIceSector.columns = dfRunoffIceSector.columns.get_level_values(1)
 
-if "dsRunoff500mMAR_GrIS_per_section" not in locals():
-    print("Opening the data")
-    dsRunoff500mMAR_GrIS_per_section = xr.open_dataset(
-        path_sums_masks_500m + "runoff.1940-2023.MAR3v14.GrIS.0.5km.GrIS.YY.per_section.nc"
-    )
-# (dsRunoff500mMAR_GrIS_per_section/1e6).plot(hue = 'section_numbers_adjusted')
-# add attributes km3 w.e. per year
-dsRunoff500mMAR_GrIS_per_section.attrs["units"] = "km3 w.e. per year"
-dsRunoff500mMAR_GrIS_per_section.attrs["Description"] = (
-    "Sum per sector of the Greenland Ice Sheet for the 500m MAR3.14 data"
-)
 
-# Ice caps
-dfRunoff500mMAR_GIC_per_section = (
-    dsRunoff500mMAR_GIC_per_section["runoffcorr"].to_dataframe().reset_index()
-)
-dfRunoff500mMAR_GIC_per_section["section_numbers_adjusted"] = dfRunoff500mMAR_GIC_per_section[
-    "section_numbers_adjusted"
-].map(dict_sections)
-dfRunoff500mMAR_GIC_per_section = (
-    dfRunoff500mMAR_GIC_per_section.set_index("time").pivot(columns="section_numbers_adjusted")
-    / 1e6
-)
-dfRunoff500mMAR_GIC_per_section.columns = dfRunoff500mMAR_GIC_per_section.columns.get_level_values(
-    1
-)
 
 dsRunoffIceCapSectormm = xr.open_dataset("/Volumes/imau02/rapid/Anneke/RACMO2.3p2/FGRN055/Downscaling_GR/Monthly/runoff_GIC.1990-2023.RACMO2.3p2_ERA5_3h_FGRN055.1km.MM.GIC.section_sum.nc")['runoffcorr']
 dsRunoffIceCapSector = kgperm2_to_Gt(dsRunoffIceCapSectormm)
