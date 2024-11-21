@@ -6,7 +6,8 @@ pathIMAU01 = "/Volumes/imau01/rapid/"
 pathRACMO_fjords = pathAnnekeFolderIMAU02+"//Downscaling_GR/Monthly/fjords_only/"
 
 
-pathGithubFolder = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/"
+# pathGithubFolder = "/Users/annek/Library/CloudStorage/OneDrive-SharedLibraries-NIOZ/PhD Anneke Vries - General/FWclean/"
+pathGithubFolder = "/Users/annek/Documents/Varia-Fresh-Fjords/"
 
 
 path_Mankoff2020Solid =pathGithubFolder+ "data/raw/solid_discharge/Mankoff2020Solid/"

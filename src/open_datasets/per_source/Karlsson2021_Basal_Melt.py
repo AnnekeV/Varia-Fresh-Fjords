@@ -14,11 +14,7 @@ from scripts.paths import *
 
 
 
-pathGithubFolder = "/Users/annek/Documents/Varia-Fresh-Fjords/"
-pathDataGithub = pathGithubFolder+ "data/"
-pathDataTemp = pathGithubFolder+ "data/temp/"
-pathDataRaw = pathGithubFolder+ "data/raw/"
-pathDataProcessed = pathGithubFolder+ "data/processed/"
+
 
 
 # Define paths

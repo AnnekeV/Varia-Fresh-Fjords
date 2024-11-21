@@ -22,7 +22,7 @@ from scripts.paths import *
 
 # In[522]:
 
-
+# download from King, M.D., Howat, I.M., Candela, S.G. et al. Dynamic ice loss from the Greenland Ice Sheet driven by sustained glacier retreat. Commun Earth Environ 1, 1 (2020). https://doi-org.utrechtuniversity.idm.oclc.org/10.1038/s43247-020-0001-2
 pathKing =  pathDataGithub +'raw/solid_discharge/King2020_doi_10_5061_dryad_qrfj6q5cb__v20200429/GrIS_D_1985-2018.xlsx'
 
 
