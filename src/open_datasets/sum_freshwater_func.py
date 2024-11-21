@@ -10,6 +10,7 @@ import matplotlib.dates as mdates
 import numpy as np
 import gzip
 import shutil
+import os
 
 import pandas as pd
 
@@ -26,7 +27,7 @@ print("Import and make masks")
 pathDataRaw = pathGithubFolder+ "data/raw/"
 fpath_adj_sect  = f'{pathDataTemp}adjusted_section_numbers_slater.nc'
 fpath_masks1k = f'{pathDataTemp}masks1k.nc'
-folder_MARRACMO1km = f"{pathDataRaw}liquid/"
+folder_MARRACMO1km = f"{pathDataRaw}liquid/MAR_RACMO_Annual/"
 ds_masks1k = xr.open_dataset(fpath_masks1k)
 ds_adj_sect = xr.open_dataset(fpath_adj_sect)
 mask_sections = (
@@ -123,11 +124,11 @@ dsPrecipFjordsVol = xr.open_dataset(file_annual_fjord)
 dsPrecipFjordsVolSum = dsPrecipFjordsVol.sum(dim=["x", "y"]).resample(time="YS").sum()
 
 # CARRA precipitation 
-ds_precip_carra_1991_2008_sum = xr.open_dataset(
+ds_precip_carra_1991_2008_sum = xr.open_mfdataset(
     pathIMAU02
     + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.YY.fjords_only.sum_per_basin.nc"
 )
-ds_precip_carra_2009_2023_sum = xr.open_dataset(
+ds_precip_carra_2009_2023_sum = xr.open_mfdataset(
     pathIMAU02
     + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.YY.fjords_only.sum_per_basin.nc"
 )
@@ -195,24 +196,6 @@ def kgperm2_to_Gt(ds):
     ds.attrs["units"] = "Gt"
     return ds
 
-
-def mask_MougBasins_ice(ds, IceOrTundra):
-    """Mask the RACMO data with the Mouginot basins and sum the values for each basin
-    IceOrTundra: "Ice" or "Tundra" to select the mask to use"""
-
-    path_mask_1k_with_tundra = "/Users/annek/Documents/RACMO2.3p2/FGRN055/Downscaling_GR/GrIS_topo_icemask_lsm_tundra_basins_lon_lat_1km.nc"
-    mask_1k_with_tundra = xr.open_dataset(path_mask_1k_with_tundra)
-    if IceOrTundra == "Ice":
-        ds["Basins"] = mask_1k_with_tundra["Basins_All_Greenland"]
-        dsMougTime = ds.groupby("Mouginot_basins").sum()
-    elif IceOrTundra == "Tundra":
-        ds["Mouginot_basins"] = mask_1k_with_tundra["Tundra_basins"]
-        dsMougTime = ds.groupby("Mouginot_basins").sum()
-    # give a attribute
-    ds.attrs["Description"] = (
-        f"Sum per sector of the Mouginot basins for {spatial_resolution} RACMO2.3p2, for the {IceOrTundra} "
-    )
-    return dsMougTime
 
 
 # %% loading datasets
@@ -286,6 +269,8 @@ dfRunoffTundraSector.columns = dfRunoffTundraSector.columns.get_level_values(1)
 # ===== 
 # Load Solid ice discharge
 # =====
+
+#  from https://essd.copernicus.org/articles/12/1367/2020/
 dfSectionD = pd.read_csv(
     path_Mankoff2020Solid_adjusted + "section_D.csv", index_col=0, parse_dates=True
 )
@@ -365,16 +350,16 @@ dfPrecipFjordsSector_RACMO_year.columns = dfPrecipFjordsSector_RACMO_year.column
     1
 )
 
-dfPrecipFjordsSector_CARRA_year = (
-    ds_precip_carra_1991_2023_sum.to_dataframe()
-    .reset_index()
-    .set_index("time")
-    .pivot(columns="section_numbers_adjusted")
-    .rename(columns=dict_sections)
-)
-dfPrecipFjordsSector_CARRA_year.columns = dfPrecipFjordsSector_CARRA_year.columns.get_level_values(
-    1
-)
+# dfPrecipFjordsSector_CARRA_year = (
+#     ds_precip_carra_1991_2023_sum.to_dataframe()
+#     .reset_index()
+#     .set_index("time")
+#     .pivot(columns="section_numbers_adjusted")
+#     .rename(columns=dict_sections)
+# )
+# dfPrecipFjordsSector_CARRA_year.columns = dfPrecipFjordsSector_CARRA_year.columns.get_level_values(
+#     1
+# )
 
 dfPrecipFjordsSector_RACMO_month = (
     ds_precip_racmo_1990_2023_sum_monthly.to_dataframe()
@@ -441,10 +426,6 @@ else:
             .to_xarray()
             .to_dataset(name="Precipitation Fjords")
             .rename({"section_numbers_adjusted": "Basins"}) /1e6,
-            # dfPrecipFjordsSector_CARRA_month.stack()
-            # .to_xarray()
-            # .to_dataset(name="Precipitation Fjords CARRA")
-            # .rename({"section_numbers_adjusted": "Basins"}),
             ds_time_series_Basal,
         ]
     )
@@ -465,8 +446,6 @@ else:
         weighted_mean["Date"] = weighted_mean.Date - pd.Timedelta(15, unit="D")
         return weighted_mean
 
-    def compute_monthly_mean(data):
-        return data.resample(Date="1ME").mean()
 
     dsSectorSum["Solid Ice discharge (weighted mean)"] = (
         compute_weighted_monthly_mean(dfSectionD.stack().to_xarray())
@@ -481,68 +460,72 @@ else:
     dsSectorSum.to_netcdf(pathDataTemp + f"RACMO2.3p2_1k_sector_sum_2024_10_22.nc")
 
 dsSectorSum = dsSectorSum.where(dsSectorSum != 0)
-(dsSectorSum.resample(time="YS").mean() * 12).sum(
-    dim="Basins"
-).to_dataframe().reset_index().set_index("time").to_csv(
-    pathDataTemp + f"Greenland_Sum_2024_06_12.csv"
-)
+# (dsSectorSum.resample(time="YS").mean() * 12).sum(
+#     dim="Basins"
+# ).to_dataframe().reset_index().set_index("time").to_csv(
+#     pathDataTemp + f"Greenland_Sum_2024_06_12.csv"
+# )
 
-# Calculate the mean of each DataArray in the Dataset
+# Sort dataset based on mean
 means = {var: dsSectorSum[var].mean().item() for var in dsSectorSum.data_vars}
-
-# Convert the means to a DataFrame
 variables_sorted = (
     pd.DataFrame(list(means.items()), columns=["Variable", "Mean"])
     .sort_values(by="Mean", ascending=False)["Variable"]
     .values
 )
-
 dsSectorSum = dsSectorSum[variables_sorted]
 
 
-# make a list of all the names of data variables in dsSectorSum
-period1 = {"start": "1990", "end": "2004"}
-period2 = {"start": "2005", "end": "2023"}
 
 try:
     dsMonthlyGr = dsSectorSum.copy(deep=True).drop("winter_year").drop("summer_year")
 except:
     dsMonthlyGr = dsSectorSum.copy(deep=True)
-# make all 0 values nan
+
 dsMonthlyGr = dsMonthlyGr.where(dsMonthlyGr > 0)
-# rename to short names
 dsMonthlyGr = dsMonthlyGr.rename(dict_shorter_name)
-# only select col_order_rel
 dsMonthlyGr = dsMonthlyGr[col_order_rel]
 dsMonthlyGr = dsMonthlyGr.resample(time="MS").mean()
 
+
+
 # Calculate the mean and standard deviation for each month
-data_mean_seasonal_period2 = (
-    dsMonthlyGr.sel(time=slice(period2["start"], period2["end"]))
-    .sum(dim="Basins")
-    .groupby("time.month")
-    .mean()
-)
-data_std_seasonal_period2 = (
-    dsMonthlyGr.sel(time=slice(period2["start"], period2["end"]))
-    .sum(dim="Basins")
-    .groupby("time.month")
-    .std()
-)
 
-data_mean_seasonal_period1 = (
-    dsMonthlyGr.sel(time=slice(period1["start"], period1["end"]))
-    .sum(dim="Basins")
-    .groupby("time.month")
-    .mean()
-)
-data_std_seasonal_period1 = (
-    dsMonthlyGr.sel(time=slice(period1["start"], period1["end"]))
-    .sum(dim="Basins")
-    .groupby("time.month")
-    .std()
-)
+period1 = {"start": "1990", "end": "2004"}
+period2 = {"start": "2005", "end": "2023"}
 
+
+def calculate_seasonal_statistics(ds, period, dim="Basins"):
+    """
+    Calculate the mean and standard deviation of seasonal data for a given period.
+
+    Parameters:
+    ds (xarray.Dataset): The dataset to calculate statistics on.
+    period (dict): A dictionary with 'start' and 'end' keys defining the time period.
+    dim (str): The dimension to sum over before calculating statistics.
+
+    Returns:
+    tuple: A tuple containing the mean and standard deviation of the seasonal data.
+    """
+    data_mean_seasonal = (
+        ds.sel(time=slice(period["start"], period["end"]))
+        .sum(dim=dim)
+        .groupby("time.month")
+        .mean()
+    )
+    data_std_seasonal = (
+        ds.sel(time=slice(period["start"], period["end"]))
+        .sum(dim=dim)
+        .groupby("time.month")
+        .std()
+    )
+    return data_mean_seasonal, data_std_seasonal
+
+data_mean_seasonal_period2, data_std_seasonal_period2 = calculate_seasonal_statistics(dsMonthlyGr, period2)
+data_mean_seasonal_period1, data_std_seasonal_period1 = calculate_seasonal_statistics(dsMonthlyGr, period1)
+
+
+#  Recalculate solid ice discharge for different periods
 dfGIS_period1 = pd.read_csv(path_Mankoff2020Solid + "GIS_D.csv", index_col=0, parse_dates=True)[
     period1["start"] : period1["end"]
 ]
@@ -562,12 +545,8 @@ data_std_seasonal_period2["Solid Ice Discharge"].values = (
     np.squeeze(dfGIS_period2.groupby(dfGIS_period2.index.month).std().values) / 12
 )
 
-data_mean_seasonal_good_data = (
-    dsMonthlyGr.sel(time=slice('2009', '2023')).
-    sum(dim="Basins").groupby("time.month").mean()    
-)
-data_std_seasonal_good_data = (
-    dsMonthlyGr.sel(time=slice('2009', '2023')).sum(dim="Basins").groupby("time.month").std())
+
+data_mean_seasonal_good_data, data_std_seasonal_good_data = calculate_seasonal_statistics(dsMonthlyGr, {"start": "2009", "end": "2023"})
 
 
 # %% MAR 1 KM RUNOFF
@@ -609,28 +588,43 @@ def open_compressed_xarray(file_path):
 
     # Open the decompressed file with xarray
     ds = xr.open_dataset(decompressed_file, engine='netcdf4', decode_times=False)
+
+    # remove the decompressed file
+    os.remove(decompressed_file)
     return ds
 
 
-#  MAR DATA
-# Load MAR data
-ds_run_MAR = open_compressed_xarray(folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz")
-ds_run_MAR['years_since_19400115'] = ds_run_MAR.time
-ds_run_MAR['time'] = convert_months_to_date(ds_run_MAR['years_since_19400115'], '1940-01-15')
+def process_runoff_data(file_path, start_date, convert_func, ds_adj_sect, ds_masks1k):
+    ds_run = open_compressed_xarray(file_path)
+    ds_run['time_since_start'] = ds_run.time
+    ds_run['time'] = convert_func(ds_run['time_since_start'].values, start_date)   # Convert timedelta to datetime
+    ds_run_mean = ds_run.mean(dim=['time'])    # Get masks in the same xarray coordinate system
 
-# Get masks in the same xarray coordinate system
-ds_run_MAR_mean = ds_run_MAR.mean(dim=['time'])
-ds_run_MAR_mean['section_numbers_adjusted'] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
-ds_run_MAR_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
-for var in ds_masks1k.data_vars:
-    ds_run_MAR_mean[var] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
-    ds_run_MAR_mean[var].values = ds_masks1k[var].values
+        
+    # ds_run_mean['section_numbers_adjusted'] = add_variable(ds_run_mean, ds_adj_sect['section_numbers_adjusted'], 'runoffcorr')
+    ds_run_mean['section_numbers_adjusted'] =     ds_run_mean['runoffcorr'].copy(deep=True)
+    ds_run_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
 
-# Calculate runoff for each basin yearly in Gt
-ds_run_MAR_GrIS_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GrIS'] == 1)
-                         .groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum() / 1e6)
-ds_run_MAR_GIC_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GIC'] == 1)
-                        .groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum() / 1e6)
+    for var in ds_masks1k.data_vars:
+        ds_run_mean[var] = ds_run_mean['runoffcorr'].copy(deep=True)
+        ds_run_mean[var].values = ds_masks1k[var].values
+
+    # Calculate runoff for each basin yearly in Gt
+    ds_run_GrIS_basin = (ds_run['runoffcorr'].where(ds_run_mean['GrIS'] == 1)
+                         .groupby(ds_run_mean['section_numbers_adjusted']).sum() / 1e6)
+    ds_run_GIC_basin = (ds_run['runoffcorr'].where(ds_run_mean['GIC'] == 1)
+                        .groupby(ds_run_mean['section_numbers_adjusted']).sum() / 1e6)
+    
+    return ds_run_GrIS_basin, ds_run_GIC_basin
+
+# Process MAR data
+ds_run_MAR_GrIS_basin, ds_run_MAR_GIC_basin = process_runoff_data(
+    folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz",
+    '1940-01-15',
+    convert_months_to_date,
+    ds_adj_sect,
+    ds_masks1k
+)
 
 # Update dsSectorSumMAR with MAR data
 dsSectorSumMAR = dsSectorSum.copy(deep=True).resample(time='YS').mean() * 12
@@ -642,21 +636,11 @@ mapped_values = np.array([dict_sections.get(val, val) for val in ds_run_MAR_GIC_
 ds_run_MAR_GIC_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
 ds_run_MAR_GrIS_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
 
-# Load RACMO data
-ds_run_RACMO = open_compressed_xarray(folder_MARRACMO1km + "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz")
-ds_run_RACMO['years_since_19580115'] = ds_run_RACMO.time
-ds_run_RACMO['time'] = convert_years_to_date(ds_run_RACMO['years_since_19580115'], '1958-01-15')
-
-# Get masks in the same xarray coordinate system
-ds_runoff_RACMO_mean = ds_run_RACMO.sum(dim=['time'])
-ds_runoff_RACMO_mean['section_numbers_adjusted'] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
-ds_runoff_RACMO_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
-for var in ds_masks1k.data_vars:
-    ds_runoff_RACMO_mean[var] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
-    ds_runoff_RACMO_mean[var].values = ds_masks1k[var].values
-
-# Calculate runoff for each basin yearly in Gt
-ds_run_RACMO_GrIS_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GrIS'] == 1)
-                           .groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum() / 1e6)
-ds_run_RACMO_GIC_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GIC'] == 1)
-                          .groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum() / 1e6)
+# Process RACMO data
+ds_run_RACMO_GrIS_basin, ds_run_RACMO_GIC_basin = process_runoff_data(
+    folder_MARRACMO1km + "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz",
+    '1958-01-15',
+    convert_years_to_date,
+    ds_adj_sect,
+    ds_masks1k
+)
