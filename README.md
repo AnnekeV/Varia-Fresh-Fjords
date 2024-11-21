@@ -1,11 +1,8 @@
-# re-simple-python-project
+# Seasonable Variability of Freshwater input into Greenland's fjords
+This reposotory contains the code used for making the figures for the paper .. (link)
+To make it work properly you need data mentioned in the paper and below, and the paths need to be adjusted.
+The figures are made in the python note book files with the specific names.
 
-This simple project structure template repository is adapted from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
-If you plan to develop a package, check the [template repository for a Python package](https://github.com/UtrechtUniversity/re-python-package).
-
-## Usage
-
-Click "Use this template" at the top of this page to create a new repository with the same folder structure.
 
 ## Project Structure
 
@@ -31,7 +28,10 @@ The project structure distinguishes three kinds of folders:
 ├── results
 │   ├── figures        <- Figures for the manuscript or reports (PG)
 │   └── output         <- Other output for the manuscript or reports (PG)
-└── src                <- Source code for this project (HW)
+└── src                <- Source code for this project and figure making notebooks (HW)
+│   ├── scripts        <- contains path and dictionary file that are being used in the whole project
+│   └── persource      <- When some conversion is done for specific sources to make the formatting right, it's here  (PG)
+
 
 ```
 
@@ -41,3 +41,9 @@ Create a citation file for your repository using [cffinit](https://citation-file
 ## License
 
 This project is licensed under the terms of the [MIT License](/LICENSE).
+
+
+## Template
+
+This simple project structure template repository is adapted from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
+If you plan to develop a package, check the [template repository for a Python package](https://github.com/UtrechtUniversity/re-python-package).
