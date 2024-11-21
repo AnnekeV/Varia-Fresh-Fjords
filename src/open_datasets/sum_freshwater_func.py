@@ -613,43 +613,50 @@ def open_compressed_xarray(file_path):
 
 
 #  MAR DATA
-
-
-mapped_values = np.array([dict_sections.get(val, val) for val in ds_run_MAR_GIC_basin.section_numbers_adjusted.values])
-ds_run_MAR_GIC_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
-ds_run_MAR_GrIS_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
+# Load MAR data
 ds_run_MAR = open_compressed_xarray(folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz")
 ds_run_MAR['years_since_19400115'] = ds_run_MAR.time
 ds_run_MAR['time'] = convert_months_to_date(ds_run_MAR['years_since_19400115'], '1940-01-15')
 
-# get masks in same xarray coordinate system
+# Get masks in the same xarray coordinate system
 ds_run_MAR_mean = ds_run_MAR.mean(dim=['time'])
 ds_run_MAR_mean['section_numbers_adjusted'] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
 ds_run_MAR_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
 for var in ds_masks1k.data_vars:
     ds_run_MAR_mean[var] = ds_run_MAR_mean['runoffcorr'].copy(deep=True)
     ds_run_MAR_mean[var].values = ds_masks1k[var].values
-dsSectorSumMAR = dsSectorSum.copy(deep=True).resample(time='YS').mean()*12
+
+# Calculate runoff for each basin yearly in Gt
+ds_run_MAR_GrIS_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GrIS'] == 1)
+                         .groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum() / 1e6)
+ds_run_MAR_GIC_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GIC'] == 1)
+                        .groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum() / 1e6)
+
+# Update dsSectorSumMAR with MAR data
+dsSectorSumMAR = dsSectorSum.copy(deep=True).resample(time='YS').mean() * 12
 dsSectorSumMAR['Liquid Runoff Ice Caps'] = ds_run_MAR_GIC_basin.rename({'section_numbers_adjusted': 'Basins'}).resample(time='YS').mean(skipna=True)
 dsSectorSumMAR['Liquid Runoff Ice Sheet'] = ds_run_MAR_GrIS_basin.rename({'section_numbers_adjusted': 'Basins'}).resample(time='YS').mean(skipna=True)
 
-# calculate runoff for each basin yearly in Gt
-ds_run_MAR_GrIS_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GrIS']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
-ds_run_MAR_GIC_basin = (ds_run_MAR['runoffcorr'].where(ds_run_MAR_mean['GIC']==1).groupby(ds_run_MAR_mean['section_numbers_adjusted']).sum()/1e6)
+# Map section numbers to names
+mapped_values = np.array([dict_sections.get(val, val) for val in ds_run_MAR_GIC_basin.section_numbers_adjusted.values])
+ds_run_MAR_GIC_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
+ds_run_MAR_GrIS_basin['section_numbers_adjusted'] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
 
-ds_run_RACMO = open_compressed_xarray(folder_MARRACMO1km+ "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz")
+# Load RACMO data
+ds_run_RACMO = open_compressed_xarray(folder_MARRACMO1km + "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz")
 ds_run_RACMO['years_since_19580115'] = ds_run_RACMO.time
 ds_run_RACMO['time'] = convert_years_to_date(ds_run_RACMO['years_since_19580115'], '1958-01-15')
+
+# Get masks in the same xarray coordinate system
 ds_runoff_RACMO_mean = ds_run_RACMO.sum(dim=['time'])
 ds_runoff_RACMO_mean['section_numbers_adjusted'] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
 ds_runoff_RACMO_mean['section_numbers_adjusted'].values = ds_adj_sect['section_numbers_adjusted'].values
-
 for var in ds_masks1k.data_vars:
     ds_runoff_RACMO_mean[var] = ds_runoff_RACMO_mean['runoffcorr'].copy(deep=True)
     ds_runoff_RACMO_mean[var].values = ds_masks1k[var].values
 
-
-ds_run_RACMO_GrIS_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GrIS']==1).groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum()/1e6)
-ds_run_RACMO_GIC_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GIC']==1).groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum()/1e6)
-
-# %%
+# Calculate runoff for each basin yearly in Gt
+ds_run_RACMO_GrIS_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GrIS'] == 1)
+                           .groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum() / 1e6)
+ds_run_RACMO_GIC_basin = (ds_run_RACMO['runoffcorr'].where(ds_runoff_RACMO_mean['GIC'] == 1)
+                          .groupby(ds_runoff_RACMO_mean['section_numbers_adjusted']).sum() / 1e6)

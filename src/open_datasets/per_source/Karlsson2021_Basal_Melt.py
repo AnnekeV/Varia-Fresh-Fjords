@@ -12,7 +12,19 @@ sys.path.append("..")
 from scripts.dicts import *
 from scripts.paths import *
 
+
+
+pathGithubFolder = "/Users/annek/Documents/Varia-Fresh-Fjords/"
+pathDataGithub = pathGithubFolder+ "data/"
+pathDataTemp = pathGithubFolder+ "data/temp/"
+pathDataRaw = pathGithubFolder+ "data/raw/"
+pathDataProcessed = pathGithubFolder+ "data/processed/"
+
+
 # Define paths
+# Basal melt from : Karlsson, N.B., Solgaard, A.M., Mankoff, K.D. et al. A first constraint on basal melt-water production of the Greenland ice sheet. Nat Commun 12, 3461 (2021). https://doi-org.utrechtuniversity.idm.oclc.org/10.1038/s41467-021-23739-z
+# mask1k from racmo mask downscaled to 1km for Promice mask
+ 
 path_BasalMelt = pathDataRaw + "liquid/Karlsson2021_basalmelt/basalmelt.nc"
 fpath_adj_sect = pathDataTemp + "adjusted_section_numbers_slater.nc"
 fpath_masks1k = pathDataTemp + "masks1k.nc"
@@ -73,6 +85,8 @@ df_melt_basal_per_basin_racmo_grid = (
 )
 print(f"Sum is {df_melt_basal_per_basin_racmo_grid.sum().values[0]:.1f} km3/yr")
 
+
+# Calculate monthly basal melt per basin, based on monthly runoff
 # Load monthly fluxes
 df_monthly_fluxes = pd.read_csv(
     pathDataProcessed + "Seasonal_Greenland_2009_2022.csv", index_col=0
@@ -82,7 +96,7 @@ df_monthly_fraction_runoff_of_total_runoff = (
 )["Liquid Runoff Ice Sheet"]
 
 # Load basin monthly runoff
-folder = pathDataProcessed + "Archive/Seasonal cycle per sector/"
+folder = pathDataProcessed + "Archive/Seasonal cycle per sector without basal/"
 files = glob.glob(folder + "*.csv")
 
 df_basin_monthly_runoff = pd.DataFrame()
@@ -115,6 +129,3 @@ df_Basal_basin_monthly = df_vhd_monthly_basin + df_gf_monthly_basin + df_fric_mo
 df_Basal_GrIS_monthly = df_Basal_basin_monthly.sum(axis=1)
 df_Basal_GrIS_annual = df_Basal_GrIS_monthly.sum()
 
-# Save results to data temp
-df_Basal_basin_monthly.to_csv(pathDataTemp + "Basal_melt/Basal_basin_monthly.csv")
-df_Basal_GrIS_monthly.to_csv(pathDataTemp + "Basal_melt/Basal_GrIS_monthly.csv")
