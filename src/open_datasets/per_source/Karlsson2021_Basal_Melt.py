@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# This code imports Basal melt from Karlsson 2021 and 
+# calculates monthly cycle base on runoff and saves it to 
+# csv
+
+
 import numpy as np
 import pandas as pd
 import glob

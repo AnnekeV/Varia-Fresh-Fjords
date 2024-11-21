@@ -1,3 +1,5 @@
+# This code maps individual gates to regions defined in this 
+# study
 
 import pandas as pd
 import numpy as np
