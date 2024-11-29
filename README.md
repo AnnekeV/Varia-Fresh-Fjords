@@ -1,7 +1,9 @@
-# re-simple-python-project
+#  Varia-Fresh-Fjords-2025
 
-This simple project structure template repository is adapted from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
-If you plan to develop a package, check the [template repository for a Python package](https://github.com/UtrechtUniversity/re-python-package).
+This repository contains code data used to produce figures for _Seasonal and interannual variability of freshwater sources for Greenland’s fjords_ submitted to The Cryosphere special issue _Northern hydrology in transition – impacts of a changing cryosphere on water resources, ecosystems, and humans_ on November 29, 2024 by Anneke Vries et al. . 
+Large data files need to be downloaded seperately as described in the code availability. 
+
+The structure of the this repository is based  the adaption from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
 
 ## Usage
 
