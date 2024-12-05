@@ -3,6 +3,16 @@ This reposotory contains the code used for making the figures for the paper .. (
 To make it work properly you need data mentioned in the paper and below, and the paths need to be adjusted.
 The figures are made in the python note book files with the specific names.
 
+#  Varia-Fresh-Fjords-2025
+
+This repository contains code data used to produce figures for _Seasonal and interannual variability of freshwater sources for Greenland’s fjords_ submitted to The Cryosphere special issue _Northern hydrology in transition – impacts of a changing cryosphere on water resources, ecosystems, and humans_ on November 29, 2024 by Anneke Vries et al. . 
+Large data files need to be downloaded seperately as described in the code availability. 
+
+The structure of the this repository is based  the adaption from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
+
+## Usage
+
+Click "Use this template" at the top of this page to create a new repository with the same folder structure.
 
 ## Project Structure
 
