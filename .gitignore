@@ -2,8 +2,8 @@
 .DS_Store
 **/.DS_Store
 
-
-data
+data/temp
+data/raw
 /data/temp
 /data/raw
 src/open_datasets/per_source/data
