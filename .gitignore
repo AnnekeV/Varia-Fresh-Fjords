@@ -5,7 +5,6 @@
 
 data
 /data/temp
-/data/processed
 /data/raw
 src/open_datasets/per_source/data
 src/open_datasets/scripts/Mask_adjusted_section_numbers_slater_0.5km_13_June.nc
