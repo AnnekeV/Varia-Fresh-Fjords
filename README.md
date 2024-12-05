@@ -30,7 +30,7 @@ The project structure distinguishes three kinds of folders:
 │   └── output         <- Other output for the manuscript or reports (PG)
 └── src                <- Source code for this project and figure making notebooks (HW)
 │   ├── scripts        <- contains path and dictionary file that are being used in the whole project
-│   └── persource      <- When some conversion is done for specific sources to make the formatting right, it's here  (PG)
+│   └── persource      <- When some conversion is done for specific sources to make the formatting right, it's here 
 
 
 ```
