@@ -5,12 +5,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-try:
-    from scripts.find_largest_islands import *
-    from scripts.paths import *
-except:
-    from find_largest_islands import *
-    from paths import *
+# try:
+#     from scripts.find_largest_islands import *
+#     from scripts.paths import *
+# except:
+#     from .find_largest_islands import *
+#     from .paths import *
+print("Current working directory:", os.getcwd())
+from scripts.paths import *
 
 print(f"Pathdata: {pathdata}")
 

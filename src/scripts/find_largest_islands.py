@@ -10,7 +10,7 @@ import os
 try:
     from scripts.paths import *
 except:
-    from paths import *
+    from .paths import *
 
 path_mask_islands = os.path.join(pathDataTemp, "Mask_1km_largest_islands.nc")
 def largest_islands(grid):

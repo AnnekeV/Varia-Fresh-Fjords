@@ -2,6 +2,7 @@
 from scripts.open_preprocess_racmo import *
 from scripts.paths import *
 from scripts.dicts import *
+from scripts.masks import mask_sections
 
 import matplotlib.pyplot as plt
 import cmcrameri.cm as cmc
@@ -30,8 +31,7 @@ fpath_masks1k = f'{pathDataTemp}masks1k.nc'
 folder_MARRACMO1km = f"{pathDataRaw}liquid/MAR_RACMO_Annual/"
 ds_masks1k = xr.open_dataset(fpath_masks1k)
 ds_adj_sect = xr.open_dataset(fpath_adj_sect)
-mask_sections = (
-    pathIMAU02 + "RACMO2.3p2/FGRN055/Downscaling_GR/Mask_adjusted_section_numbers_slater_may24.nc")
+
 dsmask_sections = xr.open_mfdataset(mask_sections)
 # masks1k = xr.open_dataset("/Users/annek/Documents/RACMO2.3p2/FGRN055/Downscaling_GR/masks1k.nc")
 # fname = (
