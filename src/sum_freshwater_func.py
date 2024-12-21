@@ -159,34 +159,34 @@ dfSolidMankoff = dfGISDMankoff.copy(deep=True)
 dfRunoffTundra.index = dfRunoffTundra.index.year
 dfPrecipFjordsVol = dfPrecipFjordsVol.groupby(dfPrecipFjordsVol.index.year).mean()
 
-dfRunoff_RACMO_1k_YY_GIC_sum = dsRunoff_RACMO_1k_YY_GIC_sum.squeeze().to_dataframe(name="Runoff Ice Caps (RACMO 1km)")
-dfRunoff_RACMO_1k_YY_GrIS_sum = dsRunoff_RACMO_1k_YY_GrIS_sum.squeeze().to_dataframe(name="Runoff GrIS (RACMO 1km)")
+# dfRunoff_RACMO_1k_YY_GIC_sum = dsRunoff_RACMO_1k_YY_GIC_sum.squeeze().to_dataframe(name="Runoff Ice Caps (RACMO 1km)")
+# dfRunoff_RACMO_1k_YY_GrIS_sum = dsRunoff_RACMO_1k_YY_GrIS_sum.squeeze().to_dataframe(name="Runoff GrIS (RACMO 1km)")
 dfPrecipFjordsCARRA = (
     dsPrecipFjordsCARRA_Annual_Sum["precip"].squeeze().to_dataframe(name="Precipitation Fjords (CARRA)")
 )
 dfPrecipFjordsCARRA.index = dfPrecipFjordsCARRA.index.year
-dfRunoff_RACMO_1k_YY_GIC_sum.index = dfRunoff_RACMO_1k_YY_GIC_sum.index.year
-dfRunoff_RACMO_1k_YY_GrIS_sum.index = dfRunoff_RACMO_1k_YY_GrIS_sum.index.year
+# dfRunoff_RACMO_1k_YY_GIC_sum.index = dfRunoff_RACMO_1k_YY_GIC_sum.index.year
+# dfRunoff_RACMO_1k_YY_GrIS_sum.index = dfRunoff_RACMO_1k_YY_GrIS_sum.index.year
 
 
-df_sum_GIS_55 = pd.concat(
-    [
-        dfSolidMankoff,
-        dfRunoff_RACMO_1k_YY_GIC_sum,
-        dfRunoff_RACMO_1k_YY_GrIS_sum,
-        dfRunoffTundra,
-        dfPrecipFjordsVol,
-        dfPrecipFjordsCARRA,
-        # dfRunoffRACMOGrIS,
-        # dfRunoffRACMOGIC,
-    ],
-    axis=1,
-).sort_index()
+# df_sum_GIS_55 = pd.concat(
+#     [
+#         dfSolidMankoff,
+#         dfRunoff_RACMO_1k_YY_GIC_sum,
+#         dfRunoff_RACMO_1k_YY_GrIS_sum,
+#         dfRunoffTundra,
+#         dfPrecipFjordsVol,
+#         dfPrecipFjordsCARRA,
+#         # dfRunoffRACMOGrIS,
+#         # dfRunoffRACMOGIC,
+#     ],
+#     axis=1,
+# ).sort_index()
 
-df_sum_GIS_55.index = pd.to_datetime(df_sum_GIS_55.index, format="%Y")
+# df_sum_GIS_55.index = pd.to_datetime(df_sum_GIS_55.index, format="%Y")
 
-filterNanMonths = df_sum_GIS_55.isna().sum(axis=1) > 0  # find months with NaN values in any of the variables
-df_sum_GIS_55Relative = (df_sum_GIS_55.iloc[:,:5].mask(filterNanMonths).T / df_sum_GIS_55.iloc[:,:5].sum(axis=1)).T
+# filterNanMonths = df_sum_GIS_55.isna().sum(axis=1) > 0  # find months with NaN values in any of the variables
+# df_sum_GIS_55Relative = (df_sum_GIS_55.iloc[:,:5].mask(filterNanMonths).T / df_sum_GIS_55.iloc[:,:5].sum(axis=1)).T
 
 
 # %% =====================
