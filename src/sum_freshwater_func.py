@@ -16,7 +16,6 @@ import os
 import pandas as pd
 
 # %%
-pathIMAU02 = "/Volumes/imau02/rapid/Anneke/"
 
 
 
@@ -25,10 +24,13 @@ pathIMAU02 = "/Volumes/imau02/rapid/Anneke/"
 # =====================================
 print("Import and make masks")
 
+
+
 pathDataRaw = pathGithubFolder+ "data/raw/"
 fpath_adj_sect  = f'{pathDataTemp}adjusted_section_numbers_slater.nc'
 fpath_masks1k = f'{pathDataTemp}masks1k.nc'
 folder_MARRACMO1km = f"{pathDataRaw}liquid/MAR_RACMO_Annual/"
+
 ds_masks1k = xr.open_dataset(fpath_masks1k)
 ds_adj_sect = xr.open_dataset(fpath_adj_sect)
 
@@ -124,23 +126,38 @@ dsPrecipFjordsVol = xr.open_dataset(file_annual_fjord)
 dsPrecipFjordsVolSum = dsPrecipFjordsVol.sum(dim=["x", "y"]).resample(time="YS").sum()
 
 # CARRA precipitation 
-ds_precip_carra_1991_2008_sum = xr.open_mfdataset(
-    pathIMAU02
-    + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.YY.fjords_only.sum_per_basin.nc"
+# ds_precip_carra_1991_2008_sum = xr.open_mfdataset(
+#     pathIMAU02
+#     + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.YY.fjords_only.sum_per_basin.nc"
+# )
+# ds_precip_carra_2009_2023_sum = xr.open_mfdataset(
+#     pathIMAU02
+#     + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.YY.fjords_only.sum_per_basin.nc"
+# )
+# # concatenate
+# ds_precip_carra_1991_2023_sum = xr.concat(
+#     [ds_precip_carra_1991_2008_sum, ds_precip_carra_2009_2023_sum], dim="time"
+# )
+# dsPrecipFjordsCARRA_Annual_Sum = (
+#     (ds_precip_carra_1991_2023_sum.sum(dim="section_numbers_adjusted") / 1e6)
+#     .resample(time="YS")
+#     .sum()
+# )
+
+
+# CARRA precipitation 
+ds_precip_carra_1991_2023_sum = (
+    xr.open_mfdataset(
+        [
+            pathIMAU02
+            + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.YY.fjords_only.sum_per_basin.nc",
+            pathIMAU02
+            + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.YY.fjords_only.sum_per_basin.nc",
+        ]
+    )
+    / 1e6
 )
-ds_precip_carra_2009_2023_sum = xr.open_mfdataset(
-    pathIMAU02
-    + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.YY.fjords_only.sum_per_basin.nc"
-)
-# concatenate
-ds_precip_carra_1991_2023_sum = xr.concat(
-    [ds_precip_carra_1991_2008_sum, ds_precip_carra_2009_2023_sum], dim="time"
-)
-dsPrecipFjordsCARRA_Annual_Sum = (
-    (ds_precip_carra_1991_2023_sum.sum(dim="section_numbers_adjusted") / 1e6)
-    .resample(time="YS")
-    .sum()
-)
+ds_precip_carra_1991_2023_sum.resample(time="YS").sum()
 
 # =====================================
 # Prepare files for combining in one dataframe
@@ -287,18 +304,7 @@ dfErrorSectionDMankoff = dfErrorSectionDMankoff / 12
 dfSectionD.columns.name = "Basins"
 
 
-ds_precip_carra_1991_2023_sum = (
-    xr.open_mfdataset(
-        [
-            pathIMAU02
-            + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.YY.fjords_only.sum_per_basin.nc",
-            pathIMAU02
-            + "CARRA/Yearly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.YY.fjords_only.sum_per_basin.nc",
-        ]
-    )
-    / 1e6
-)
-ds_precip_carra_1991_2023_sum.resample(time="YS").sum()
+
 
 
 dsPrecipFjords = xr.open_mfdataset(
@@ -311,24 +317,30 @@ dsPrecipFjordsSectormm_sum = dsPrecipFjords.groupby(
     dsmask_sections["section_numbers_adjusted"]
 ).sum()
 dsPrecipFjordsSectormm_sum = dsPrecipFjordsSectormm_sum.resample(time="YS").sum()
-# %%
-monthly_precip_cara1 = (
-    pathIMAU02
-    + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.MM.fjords_only.sum_per_basin.nc"
-)
-ds_precip_carra_2009_2023_month = xr.open_dataset(monthly_precip_cara1) / 1e6
+# %% Open precipitation monthly
+# monthly_precip_cara1 = (
+#     pathIMAU02
+#     + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.MM.fjords_only.sum_per_basin.nc"
+# )
+# ds_precip_carra_2009_2023_month = xr.open_dataset(monthly_precip_cara1) / 1e6
 
-ds_precip_carra_1991_2008_month = (
-    xr.open_dataset(
-        pathIMAU02
-        + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.MM.fjords_only.sum_per_basin.nc"
-    )
-    / 1e6
-)
+# ds_precip_carra_1991_2008_month = (
+#     xr.open_dataset(
+#         pathIMAU02
+#         + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.MM.fjords_only.sum_per_basin.nc"
+#     )
+#     / 1e6
+# )
+# ds_precip_carra_1991_2023_month = xr.concat(
+#     [ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time"
+# )
 
-ds_precip_carra_1991_2023_month = xr.concat(
-    [ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time"
-)
+path_monthly_precip_carra_1991_2008 = (pathIMAU02 + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.MM.fjords_only.sum_per_basin.nc")
+path_monthly_precip_carra_2009_2023 = (pathIMAU02 + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.MM.fjords_only.sum_per_basin.nc")
+
+ds_precip_carra_1991_2008_month = xr.open_dataset(path_monthly_precip_carra_1991_2008) 
+ds_precip_carra_2009_2023_month = xr.open_dataset(path_monthly_precip_carra_2009_2023) 
+ds_precip_carra_1991_2023_month = xr.concat([ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time") /1e6
 
 ds_precip_racmo_1990_2023_sum_monthly = xr.open_mfdataset(
     pathIMAU02

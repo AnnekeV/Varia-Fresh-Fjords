@@ -13,11 +13,13 @@ from tqdm import tqdm
 #     from .paths import *
 print("Current working directory:", os.getcwd())
 from scripts.paths import *
-
+# from scrips.find_largest_islands import path_mask_islands
+# from scripts.masks import path_mask_islands
 print(f"Pathdata: {pathdata}")
 
 
 pathlocal = "/Users/annek/Documents/RACMO2.3p2/FGRN055/"
+
 
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 FW_type = ["Solid", "IceRun", "Tundra", "Precip"]
