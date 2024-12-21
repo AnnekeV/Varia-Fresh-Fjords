@@ -10,3 +10,4 @@ import os
 mask_sections = pathDataTemp + "adjusted_section_numbers_slater.nc"
 
 path_mask_islands = os.path.join(pathDataTemp, "Mask_1km_largest_islands.nc")
+pathmasks1k =  os.path.join(pathDataTemp, "Icemask_Topo_Iceclasses_lon_lat_average_1km.nc")

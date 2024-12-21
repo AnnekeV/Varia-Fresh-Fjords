@@ -4,6 +4,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+from .masks import pathmasks1k, path_mask_islands
 
 # try:
 #     from scripts.find_largest_islands import *
@@ -68,6 +69,7 @@ def read_RACMO(downscaling_type, time_resolution, years, variable, since_1940 =T
     if downscaling_type == "1k":
         if time_resolution == "Annual" or time_resolution == "Yearly":
             path1k= os.path.join(path,"Downscaling_GR", "Annual", )
+            print(path1k, variable)
             fpath = pick_file_from_list(path1k, variable)
             if len(fpath) > 1:
                 print("More than one file found. Please specify the file you want to open.")
@@ -273,7 +275,6 @@ def make_mask_largest_islands(masks1k):
         print("Mask for largest islands not found, please run find_largest_islands.py first")
 
 def open_mask_1k():
-    pathmasks1k =  os.path.join(pathAnnekeFolderIMAU02, "Downscaling_GR",  "Icemask_Topo_Iceclasses_lon_lat_average_1km.nc")
     masks1k = xr.open_mfdataset(pathmasks1k, engine='netcdf4')
     masks1k = openLSMmask1k(masks1k)
     masks1k = make_mask_largest_islands(masks1k)
