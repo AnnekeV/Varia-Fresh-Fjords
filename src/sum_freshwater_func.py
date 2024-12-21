@@ -124,11 +124,7 @@ dsPrecipFjordsVolSum = dsPrecipFjordsVol.sum(dim=["x", "y"]).resample(time="YS")
 # ds_precip_carra_1991_2023_sum = xr.concat(
 #     [ds_precip_carra_1991_2008_sum, ds_precip_carra_2009_2023_sum], dim="time"
 # )
-# dsPrecipFjordsCARRA_Annual_Sum = (
-#     (ds_precip_carra_1991_2023_sum.sum(dim="section_numbers_adjusted") / 1e6)
-#     .resample(time="YS")
-#     .sum()
-# )
+
 
 
 # CARRA precipitation
@@ -145,8 +141,13 @@ ds_precip_carra_1991_2023_sum = (
     )
     / 1e6
 )
-ds_precip_carra_1991_2023_sum.resample(time="YS").sum()
 
+
+dsPrecipFjordsCARRA_Annual_Sum = (
+    (ds_precip_carra_1991_2023_sum.sum(dim="section_numbers_adjusted"))
+    .resample(time="YS")
+    .sum()
+)
 # =====================================
 # Prepare files for combining in one dataframe
 # =====================================
