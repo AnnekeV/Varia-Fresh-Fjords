@@ -235,21 +235,25 @@ dfRunoffIceCapSector.columns = dfRunoffIceCapSector.columns.get_level_values(1)
 # Load Tundra
 # ======
 time_resolution = "Monthly"
-years = list(range(2012, 2023))
+# years = list(range(2012, 2023))
 dsRunoffTundra_mmyear = read_RACMO("1k_reproject", time_resolution, years=years, variable="runoff")
 
 # rename x and y to rlon and rlat
 dsRunoffTundra_mmyear["Tundra_basins"] = mask_tundra_sections
-path_monthly_racmo = pathAnnekeFolderIMAU02 + "/Downscaling_GR/Monthly/"
-fname_runofftundraMM = f"runoff_tundra.{years[0]}-{years[1]}.RACMO2.3p2_ERA5_3h_FGRN055.1km.MM.tundra.section_sum.nc"
+fname_runofftundraMM = "runoff_tundra.1939-2023.RACMO2.3p2_ERA5_3h_FGRN055.1km.MM.tundra.section_sum.nc"
 
-if os.path.isfile(path_monthly_racmo + fname_runofftundraMM):
-    dsRunoffTundra_mmyear_SECTOR = xr.open_dataset(path_monthly_racmo + fname_runofftundraMM)
+if os.path.isfile(        pathDataTemp
+    + "Summed_grouped/" 
+    + fname_runofftundraMM):
+    dsRunoffTundra_mmyear_SECTOR = xr.open_dataset(    
+        pathDataTemp
+    + "Summed_grouped/" 
+    + fname_runofftundraMM)
 else:
     dsRunoffTundra_mmyear_SECTOR = (
         dsRunoffTundra_mmyear["runoff"].groupby(dsRunoffTundra_mmyear["Tundra_basins"]).sum().drop("height")
     )
-    dsRunoffTundra_mmyear_SECTOR.to_netcdf(path_monthly_racmo + fname_runofftundraMM)
+    # dsRunoffTundra_mmyear_SECTOR.to_netcdf(path_monthly_racmo + fname_runofftundraMM)
 # add 2023
 ds_runoff_tundra2023 = xr.open_dataset(
     f"{pathDataTemp}runoff_tundra.2023.RACMO2.3p2_ERA5_3h_FGRN055.1km.MM.tundra.nc", engine="netcdf4"
@@ -318,13 +322,16 @@ dsPrecipFjordsSectormm_sum = dsPrecipFjordsSectormm_sum.resample(time="YS").sum(
 #     [ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time"
 # )
 
-# path_monthly_precip_carra_1991_2008 = (
-#     pathIMAU02 + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.1991-2008.1km.MM.fjords_only.sum_per_basin.nc")
-# path_monthly_precip_carra_2009_2023 = (pathIMAU02 + "CARRA/Monthly/RACMOgrid/fjords_only/total_precipitation.CARRA.west_domain.2009-2023.1km.MM.fjords_only.sum_per_basin.nc")
+path_monthly_precip_carra_1991_2008 = (
+    pathDataTemp + "Summed_grouped/" + "/total_precipitation.CARRA.west_domain.1991-2008.1km.MM.fjords_only.sum_per_basin.nc"
+    )
+path_monthly_precip_carra_2009_2023 = (
+     pathDataTemp + "Summed_grouped/" + "total_precipitation.CARRA.west_domain.2009-2023.1km.MM.fjords_only.sum_per_basin.nc"
+     )
 
-# ds_precip_carra_1991_2008_month = xr.open_dataset(path_monthly_precip_carra_1991_2008)
-# ds_precip_carra_2009_2023_month = xr.open_dataset(path_monthly_precip_carra_2009_2023)
-# ds_precip_carra_1991_2023_month = xr.concat([ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time") /1e6
+ds_precip_carra_1991_2008_month = xr.open_dataset(path_monthly_precip_carra_1991_2008)
+ds_precip_carra_2009_2023_month = xr.open_dataset(path_monthly_precip_carra_2009_2023)
+ds_precip_carra_1991_2023_month = xr.concat([ds_precip_carra_1991_2008_month, ds_precip_carra_2009_2023_month], dim="time") /1e6
 
 ds_precip_racmo_1990_2023_sum_monthly = xr.open_mfdataset(
     pathDataTemp
@@ -609,11 +616,11 @@ def process_runoff_data(file_path, start_date, convert_func, ds_adj_sect, ds_mas
         ds_run["runoffcorr"].where(ds_run_mean["GIC"] == 1).groupby(ds_run_mean["section_numbers_adjusted"]).sum() / 1e6
     )
 
-    return ds_run_GrIS_basin, ds_run_GIC_basin
+    return ds_run_GrIS_basin, ds_run_GIC_basin, ds_run_mean
 
 
 # Process MAR data
-ds_run_MAR_GrIS_basin, ds_run_MAR_GIC_basin = process_runoff_data(
+ds_run_MAR_GrIS_basin, ds_run_MAR_GIC_basin, ds_runoff_MAR_mean = process_runoff_data(
     folder_MARRACMO1km + "runoff.1940-2023.MARv3.14-ERA5.1km.YY.nc.gz",
     "1940-01-15",
     convert_months_to_date,
@@ -636,7 +643,7 @@ ds_run_MAR_GIC_basin["section_numbers_adjusted"] = xr.DataArray(mapped_values, d
 ds_run_MAR_GrIS_basin["section_numbers_adjusted"] = xr.DataArray(mapped_values, dims="section_numbers_adjusted")
 
 # Process RACMO data
-ds_run_RACMO_GrIS_basin, ds_run_RACMO_GIC_basin = process_runoff_data(
+ds_run_RACMO_GrIS_basin, ds_run_RACMO_GIC_basin, ds_runoff_RACMO_mean = process_runoff_data(
     folder_MARRACMO1km + "runoff.1958-2023.BN_RACMO2.3p2_ERA5_3h_FGRN055.1km.YY.nc.gz",
     "1958-01-15",
     convert_years_to_date,
