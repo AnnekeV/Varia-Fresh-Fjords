@@ -1,7 +1,6 @@
 # Supporting data:  Variability of Freshwater input into Greenland's fjords
 
 This repository contains code data and notebooks used to produce figures for _Seasonal and interannual variability of freshwater sources for Greenland’s fjords_ submitted to The Cryosphere special issue _Northern hydrology in transition – impacts of a changing cryosphere on water resources, ecosystems, and humans_ on November 29, 2024 by Anneke Vries et al. . 
-Large data files need to be downloaded seperately as described in the code availability. 
 
 
 
@@ -37,11 +36,8 @@ The project structure distinguishes three kinds of folders:
 ```
 
 ## Data availability
-Data for ploting pictures available from 
-
-## Add a citation file
-Create a citation file for your repository using [cffinit](https://citation-file-format.github.io/cff-initializer-javascript/#/)
-
+Data for producing figures are available from https://doi.org/10.5281/zenodo.14551168.
+The (downscaled) RACMO and MAR data sets presented in this paper were previously published in \citet{Noel2019RapidLoss} and \citet{Fettweis2020GrSMBMIP:Sheet}, and are available upon request and without condition from \href{mailto:bnoel@uliege.be}{bnoel@uliege.be} and \href{mailto:xfettweis@uliege.be}{xfettweis@uliege.be}. The solid ice discharge data is available from \citet{Mankoff2019Greenland2017} and \citet{King2020DynamicRetreat}. The CARRA data is available through \citet{Schyberg2020ArcticPresent} 
 ## License
 
 This project is licensed under the terms of the [MIT License](/LICENSE).
