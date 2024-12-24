@@ -1,18 +1,10 @@
-# Seasonable Variability of Freshwater input into Greenland's fjords
-This reposotory contains the code used for making the figures for the paper .. (link)
-To make it work properly you need data mentioned in the paper and below, and the paths need to be adjusted.
-The figures are made in the python note book files with the specific names.
+# Supporting data:  Variability of Freshwater input into Greenland's fjords
 
-#  Varia-Fresh-Fjords-2025
-
-This repository contains code data used to produce figures for _Seasonal and interannual variability of freshwater sources for Greenland’s fjords_ submitted to The Cryosphere special issue _Northern hydrology in transition – impacts of a changing cryosphere on water resources, ecosystems, and humans_ on November 29, 2024 by Anneke Vries et al. . 
+This repository contains code data and notebooks used to produce figures for _Seasonal and interannual variability of freshwater sources for Greenland’s fjords_ submitted to The Cryosphere special issue _Northern hydrology in transition – impacts of a changing cryosphere on water resources, ecosystems, and humans_ on November 29, 2024 by Anneke Vries et al. . 
 Large data files need to be downloaded seperately as described in the code availability. 
 
-The structure of the this repository is based  the adaption from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
 
-## Usage
 
-Click "Use this template" at the top of this page to create a new repository with the same folder structure.
 
 ## Project Structure
 
@@ -32,18 +24,20 @@ The project structure distinguishes three kinds of folders:
 │   ├── processed      <- The final, canonical data sets for modeling. (PG)
 │   ├── raw            <- The original, immutable data dump. (RO)
 │   └── temp           <- Intermediate data that has been transformed. (PG)
-├── docs               <- Documentation notebook for users (HW)
-│   ├── manuscript     <- Manuscript source, e.g., LaTeX, Markdown, etc. (HW)
-│   └── reports        <- Other project reports and notebooks (e.g. Jupyter, .Rmd) (HW)
 ├── results
 │   ├── figures        <- Figures for the manuscript or reports (PG)
 │   └── output         <- Other output for the manuscript or reports (PG)
 └── src                <- Source code for this project and figure making notebooks (HW)
 │   ├── scripts        <- contains path and dictionary file that are being used in the whole project
-│   └── persource      <- When some conversion is done for specific sources to make the formatting right, it's here 
+│   │    └──scripts_used_for_preprocessing
+│   │                   <- scripts for preprocessing
+│   └── per source      <- When some conversion is done for specific sources to make the formatting right, it's here 
 
 
 ```
+
+## Data availability
+Data for ploting pictures available from 
 
 ## Add a citation file
 Create a citation file for your repository using [cffinit](https://citation-file-format.github.io/cff-initializer-javascript/#/)
@@ -57,3 +51,5 @@ This project is licensed under the terms of the [MIT License](/LICENSE).
 
 This simple project structure template repository is adapted from the [Good Enough Project](https://github.com/bvreede/good-enough-project) Cookiecutter template by Barbara Vreede (2019).
 If you plan to develop a package, check the [template repository for a Python package](https://github.com/UtrechtUniversity/re-python-package).
+
+
