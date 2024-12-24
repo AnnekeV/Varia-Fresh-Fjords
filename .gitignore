@@ -2,6 +2,8 @@
 .DS_Store
 **/.DS_Store
 
+data
+/data
 data/temp
 data/raw
 /data/temp
